@@ -9,6 +9,6 @@ import org.springframework.web.bind.annotation.RestController
 class CCmusicsearchController {
     @GetMapping
     fun hello(): String {
-        return "Ciao, sono CC Music Search!"
+        return "Ciao, sono CC Music Search! (v2)"
     }
 }
