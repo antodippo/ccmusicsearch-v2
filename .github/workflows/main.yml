@@ -1,0 +1,84 @@
+# This workflow uses actions that are not certified by GitHub.
+# They are provided by a third-party and are governed by
+# separate terms of service, privacy policy, and support
+# documentation.
+
+# GitHub recommends pinning actions to a commit SHA.
+# To get a newer version, you will need to update the SHA.
+# You can also reference a tag or branch, but the action may change without warning.
+
+name: Build and Deploy to GKE
+
+on:
+  push:
+    branches:
+      - master
+
+env:
+  PROJECT_ID: ${{ secrets.GKE_PROJECT }}
+  GKE_CLUSTER: ccmusicsearch-cluster
+  GKE_ZONE: europe-west1
+  DEPLOYMENT_NAME: ccmusicsearch-deployment
+  IMAGE: ccmusicsearch
+
+jobs:
+  setup-build-publish-deploy:
+    name: Setup, Build, Publish, and Deploy
+    runs-on: ubuntu-latest
+    environment: production
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        
+      # Build the application
+      - uses: actions/checkout@v3
+      - uses: actions/setup-java@v3
+        with:
+          java-version: 17
+          distribution: 'temurin'
+      - uses: gradle/gradle-build-action@v2
+        with:
+          arguments: build
+
+      # Setup gcloud CLI
+      - uses: google-github-actions/setup-gcloud@1bee7de035d65ec5da40a31f8589e240eba8fde5
+        with:
+          service_account_key: ${{ secrets.GKE_SA_KEY }}
+          project_id: ${{ secrets.GKE_PROJECT }}
+
+      # Configure Docker to use the gcloud command-line tool as a credential
+      # helper for authentication
+      - run: |-
+          gcloud --quiet auth configure-docker
+
+      # Get the GKE credentials so we can deploy to the cluster
+      - uses: google-github-actions/auth@v1
+        with:
+          credentials_json: ${{ secrets.GKE_SA_KEY }}
+        
+      - uses: google-github-actions/get-gke-credentials@db150f2cc60d1716e61922b832eae71d2a45938f
+        with:
+          project_id: ${{ secrets.GKE_PROJECT }}
+          cluster_name: ${{ env.GKE_CLUSTER }}
+          location: ${{ env.GKE_ZONE }}
+
+      # Build the Docker image
+      - name: Build image
+        run: |-
+          docker build \
+            --tag "gcr.io/$PROJECT_ID/$IMAGE:$GITHUB_SHA" \
+            --build-arg GITHUB_SHA="$GITHUB_SHA" \
+            --build-arg GITHUB_REF="$GITHUB_REF" \
+            .
+
+      # Push the Docker image to Google Container Registry
+      - name: Publish
+        run: |-
+          docker push "gcr.io/$PROJECT_ID/$IMAGE:$GITHUB_SHA"
+
+      # Deploy the Docker image to the GKE cluster
+      - name: Deploy
+        run: |-
+          kubectl set image deployment/$DEPLOYMENT_NAME ccmusicsearch=gcr.io/$PROJECT_ID/$IMAGE:$GITHUB_SHA
+          
