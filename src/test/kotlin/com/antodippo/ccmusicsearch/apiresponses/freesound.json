@@ -1,0 +1,60 @@
+{
+  "count": 2412,
+  "previous": null,
+  "next": "https://freesound.org/apiv2/search/text/?&query=jazz&weights=&sort=created_desc&page=2&page_size=2&fields=id,name,username,tags,duration,bpm,created,url,license",
+  "results": [
+    {
+      "id": 698458,
+      "url": "https://freesound.org/people/daviddryden/sounds/698458/",
+      "name": "1025 Desending guitar shuffle rag bluegrass finger picking Gsus2 add 11_F#m_E11_D.WAV",
+      "tags": [
+        "descending",
+        "picked",
+        "walking",
+        "airy",
+        "lively",
+        "shuffle",
+        "rag",
+        "time",
+        "light",
+        "mist",
+        "calm",
+        "thoughtful",
+        "bluegrass",
+        "guitar",
+        "occupied",
+        "mystical",
+        "jazz",
+        "chord",
+        "arpeggio"
+      ],
+      "created": "2023-08-05T13:17:56",
+      "license": "https://creativecommons.org/licenses/by-nc/4.0/",
+      "duration": 28.61,
+      "username": "daviddryden"
+    },
+    {
+      "id": 698456,
+      "url": "https://freesound.org/people/daviddryden/sounds/698456/",
+      "name": "1021 E11 chord arpeggio guitar.WAV",
+      "tags": [
+        "descending",
+        "acoustic",
+        "picked",
+        "mystical",
+        "E11",
+        "airy",
+        "thoughtful",
+        "jazz",
+        "calm",
+        "chord",
+        "guitar",
+        "arpeggio"
+      ],
+      "created": "2023-08-05T13:17:56",
+      "license": "https://creativecommons.org/licenses/by-nc/4.0/",
+      "duration": 18.93,
+      "username": "daviddryden"
+    }
+  ]
+}

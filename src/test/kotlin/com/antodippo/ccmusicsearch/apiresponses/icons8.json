@@ -1,0 +1,79 @@
+{
+  "tracks": [
+    {
+      "id": "64ca664730c7fd0009c13d9e",
+      "name": "Creepy Orchestra",
+      "artist": "Sunny Music",
+      "preview": {
+        "mediaFormat": "mp3",
+        "name": "Creepy Orchestra.mp3",
+        "size": 611273,
+        "bitrate": 64000,
+        "url": "https://music-cdn.icons8.com/preview_low/100/2e7cedd0-2ba1-4f7a-8467-077cff6c144a.mp3"
+      },
+      "waveform": {
+        "height": 400,
+        "width": 1280,
+        "url": "https://music-cdn.icons8.com/waveform/166/a8029ad6-9e68-4a8c-9a4a-68e293ec8cc2.png"
+      },
+      "pro": true,
+      "contentId": false,
+      "bpm": 128,
+      "duration": 76.28571428571429,
+      "rating": {
+        "sound": 0,
+        "melody": 0,
+        "curatorScore": 0,
+        "total": 0
+      },
+      "genres": [],
+      "moods": [],
+      "instruments": [],
+      "tempos": [],
+      "tags": [
+        "Atmospheric",
+        "Beautiful",
+        "Easy Listening"
+      ],
+      "themes": [],
+      "cover": null,
+      "createdAt": 1690986055891
+    },
+    {
+      "id": "64ca662a30c7fd000bc13dbf",
+      "name": "Chill Intro",
+      "artist": "Sunny Music",
+      "preview": {
+        "mediaFormat": "mp3",
+        "name": "Chill Intro.mp3",
+        "size": 188579,
+        "bitrate": 64000,
+        "url": "https://music-cdn.icons8.com/preview_low/839/e4e53f38-7320-45e3-8019-28e03707d3bf.mp3"
+      },
+      "waveform": {
+        "height": 400,
+        "width": 1280,
+        "url": "https://music-cdn.icons8.com/waveform/688/74707c0d-98d6-4c0e-ad6b-ac14035cef80.png"
+      },
+      "pro": false,
+      "contentId": false,
+      "bpm": 124,
+      "duration": 23.47827664399093,
+      "rating": {
+        "sound": 0,
+        "melody": 0,
+        "curatorScore": 0,
+        "total": 0
+      },
+      "genres": [],
+      "moods": [],
+      "instruments": [],
+      "tempos": [],
+      "tags": [],
+      "themes": [],
+      "cover": null,
+      "createdAt": 1690986026436
+    }
+  ],
+  "total": 14374
+}

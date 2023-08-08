@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CCMusic search</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootswatch@5.3.0/dist/sketchy/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap5.min.css" rel="stylesheet">
+    <link rel="icon" type="image/x-icon" href="favicon.ico" />
+    <style>
+        #dataTable th,
+        #dataTable td {
+          vertical-align: middle;
+        }
+        #dataTable {
+          width: 100%;
+        }
+        .footer {
+            margin-top: 50px;
+            margin-bottom: 20px;
+        }
+    </style>
+
+
+</head>
+<body>
+
+<div class="container mt-5">
+
+    <div class="jumbotron jumbotron-fluid text-center">
+        <div class="container">
+            <h1 class="display-4">CCMusic search</h1>
+            <p class="lead">A search engine for Creative Commons music</p>
+            <form class="form-inline mt-4 d-flex justify-content-center" action="/" method="get">
+                <div class="form-group mx-sm-3 mb-2">
+                    <input type="text" class="form-control" id="q" name="q" placeholder="Search..." value="{{q}}">
+                </div>
+                <div class="form-group mx-sm-3 mb-2">
+                    <button type="submit" class="btn btn-primary mb-2"><i class="fas fa-search"></i> Search</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <h2>Search results</h2>
+    <table id="dataTable" class="table table-striped table-bordered">
+        <thead>
+        <tr>
+            <th style="width: 200px">Title</th>
+            <th style="width: 150px">Author</th>
+            <th style="width: 50px">Duration</th>
+            <th style="width: 50px">BPM</th>
+            <th>Tags</th>
+            <th style="width: 70px">Date</th>
+            <th style="width: 70px">Link</th>
+            <th>License</th>
+            <th style="width: 70px">Service</th>
+        </tr>
+        </thead>
+        <tbody>
+        {{#songs}}
+            <tr>
+                <td>{{title}}</td>
+                <td>{{author}}</td>
+                <td style="text-align: center">{{duration}}</td>
+                <td style="text-align: center">{{bpm}}</td>
+                <td style="font-size: 14px">{{tags}}</td>
+                <td style="text-align: center">{{date}}</td>
+                <td style="text-align: center">
+                    <a href="{{externalLink}}" target="_blank" class="btn btn-secondary btn-sm">
+                        <i class="fas fa-external-link-alt"></i> Listen
+                    </a>
+                </td>
+                <td style="text-align: center">
+                    <a href="{{licenseUrl}}" target="_blank" ><img src="{{licenseLogoUrl}}"></a>
+                </td>
+                <td style="text-align: center">
+                    <img style="max-width: 70px; max-height: 50px" src="logos/{{service}}.png">
+                </td>
+            </tr>
+        {{/songs}}
+        </tbody>
+    </table>
+
+    <footer class="footer">
+        <div class="container">
+            <hr />
+            <div class="row">
+                <div class="col-md-12 text-muted">
+                    CCMusic Search is a simple search engine for
+                    <a href="http://creativecommons.org/about" target="_blank">Creative Commons</a> music.<br/>
+                    At the moment it uses public API to find music that has been released under CC on
+                    <a href="https://www.jamendo.com/" target="_blank">Jamendo</a>,
+                    <a href="http://ccmixter.org/" target="_blank">CCMixter</a>,
+                    <a href="https://icons8.com/music" target="_blank">Icons8</a>,
+                    <a href="https://archive.org/" target="_blank">Internet Archive</a> and
+                    <a href="https://freesound.org/" target="_blank">Freesound</a>.
+                    Code is open source and available on <a href="https://github.com/antodippo/ccmusicsearch-v2" target="_blank">GitHub</a>.<br/>
+                    <br/><br/>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-1">
+                    <a rel="license" target="_blank" href="http://creativecommons.org/licenses/by-nc-sa/4.0/">
+                        <img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png" />
+                    </a>
+                </div>
+                <div class="col-md-11 text-muted">
+                    Except where otherwise noted, content on this site is licensed under a
+                    <a rel="license" target="_blank" href="http://creativecommons.org/licenses/by-nc-sa/4.0/">
+                        Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License</a> -
+                    <a href="http://antodippo.com" target="_blank">Antonello D'Ippolito</a> - 2023
+                </div>
+            </div>
+        </div>
+    </footer>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/js/all.min.js"></script>
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-C4SRXZE7P4"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-C4SRXZE7P4');
+</script>
+
+<script>
+    $(document).ready(function() {
+        $('#dataTable').DataTable({
+            paging: true,
+            pageLength: 25,
+            order: [[5, 'desc']]
+        });
+
+        // Search functionality
+        $('#searchInput').on('keyup', function() {
+            $('#dataTable').DataTable().search($(this).val()).draw();
+        });
+    });
+</script>
+
+</body>
+</html>
