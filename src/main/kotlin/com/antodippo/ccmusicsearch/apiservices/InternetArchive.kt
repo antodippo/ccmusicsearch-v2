@@ -32,7 +32,7 @@ class InternetArchive(private val apiClient: APIClient, private val printDuratio
             printDuration.finishMeasuringDuration(SearchService.INTERNETARCHIVE.toString())
         }
 
-        if (tracksArray!!.isArray) {
+        if (tracksArray != null && tracksArray.isArray) {
             return tracksArray.map {
                 SearchResult(
                     author = it["creator"]?.asText() ?: "",

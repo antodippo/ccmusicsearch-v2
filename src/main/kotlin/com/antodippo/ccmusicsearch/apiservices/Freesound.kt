@@ -34,7 +34,7 @@ class Freesound(private val apiClient: APIClient, private val printDuration: Pri
             printDuration.finishMeasuringDuration(SearchService.FREESOUND.toString())
         }
 
-        if (tracksArray!!.isArray) {
+        if (tracksArray != null && tracksArray.isArray) {
             return tracksArray.map {
                 SearchResult(
                     author = it["username"].asText(),

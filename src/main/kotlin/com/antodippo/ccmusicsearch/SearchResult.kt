@@ -31,6 +31,10 @@ enum class SearchService {
             FREESOUND -> Freesound(ApiClientViaHttp(), PrintDuration())
         }
     }
+
+    override fun toString(): String {
+        return this.name.lowercase()
+    }
 }
 
 enum class CCLicense {

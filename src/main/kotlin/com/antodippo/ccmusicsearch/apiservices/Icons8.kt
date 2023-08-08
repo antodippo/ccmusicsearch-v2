@@ -37,7 +37,8 @@ class Icons8(private val apiClient: APIClient, private val printDuration: PrintD
             printDuration.finishMeasuringDuration(SearchService.ICONS8.toString())
         }
 
-        if (tracksArray!!.isArray) {
+        // TODO unit test this array(s) conditions
+        if (tracksArray != null && tracksArray.isArray) {
             return tracksArray.map {
                 SearchResult(
                     author = it["artist"].asText(),
