@@ -27,7 +27,6 @@ dependencies {
 	implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.6.3")
 	implementation("io.projectreactor:reactor-core")
 	implementation("io.github.cdimascio:dotenv-kotlin:6.4.1")
-	// TODO move to logging in the cloud
 	implementation("io.github.microutils:kotlin-logging-jvm:2.0.11")
 	compileOnly("org.springframework.boot:spring-boot-devtools")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")

@@ -21,7 +21,7 @@ class Jamendo(private val apiClient: APIClient, private val printDuration: Print
 
         val response : HttpResponse<String>
         try {
-            response = apiClient.get(URI("https://api.jamendo.com/v3.0/tracks/?client_id=$apiKey&format=jsonpretty&limit=3&search=$query"))
+            response = apiClient.get(URI("https://api.jamendo.com/v3.0/tracks/?client_id=$apiKey&format=jsonpretty&limit=20&search=$query"))
         } catch (e: Exception) {
             logger.error { "Error while searching on Jamendo: ${e.message}" }
             return emptyList()
@@ -30,7 +30,7 @@ class Jamendo(private val apiClient: APIClient, private val printDuration: Print
         }
 
         val jsonBody = jacksonObjectMapper().readValue<JsonNode>(response.body())
-        if (jsonBody.isEmpty || jsonBody["results"] != null) {
+        if (!jsonBody.isEmpty && jsonBody["results"] != null) {
             return jsonBody["results"].map {
                 SearchResult(
                     author = it["artist_name"].asText(),

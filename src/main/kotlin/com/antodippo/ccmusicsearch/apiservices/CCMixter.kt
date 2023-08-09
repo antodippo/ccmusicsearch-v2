@@ -21,8 +21,8 @@ class CCMixter(private val apiClient: APIClient, private val printDuration: Prin
 
         val response : HttpResponse<String>
         try {
-            // TODO problem with handshaking
-            response = apiClient.get(URI("https://ccmixter.org/api/query?limit=3&f=json&tags=$query"))
+            // TODO Solve problem with handshaking :(
+            response = apiClient.get(URI("https://ccmixter.org/api/query?limit=20&f=json&tags=$query"))
         } catch (e: Exception) {
             logger.error { "Error while searching on CCMixter: ${e.message}" }
             return emptyList()

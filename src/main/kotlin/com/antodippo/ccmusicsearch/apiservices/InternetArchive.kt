@@ -22,7 +22,7 @@ class InternetArchive(private val apiClient: APIClient, private val printDuratio
         val response: HttpResponse<String>
         val tracksArray: JsonNode?
         try {
-            response = apiClient.get(URI("https://archive.org/advancedsearch.php?q=subject:$query&rows=10&output=json&mediatype=audio&sort=createdate+desc"))
+            response = apiClient.get(URI("https://archive.org/advancedsearch.php?q=subject:$query&rows=20&output=json&mediatype=audio&sort=createdate+desc"))
             val jsonBody = jacksonObjectMapper().readValue<JsonNode>(response.body())
             tracksArray = jsonBody["response"]["docs"]
         } catch (e: Exception) {
@@ -33,21 +33,23 @@ class InternetArchive(private val apiClient: APIClient, private val printDuratio
         }
 
         if (tracksArray != null && tracksArray.isArray) {
-            return tracksArray.map {
-                SearchResult(
-                    author = it["creator"]?.asText() ?: "",
-                    title = it["title"]?.asText() ?: "",
-                    duration = 0,
-                    bpm = 0,
-                    tags = it["subject"].take(7).joinToString(", "),
-                    date = LocalDate.parse(
-                        it["publicdate"].asText(),
-                        DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'")
-                    ),
-                    externalLink = URI.create("https://archive.org/search?query=${it["identifier"].asText()}"),
-                    license = CCLicense.fromUrl(it["licenseurl"]?.asText() ?: ""),
-                    service = SearchService.INTERNETARCHIVE
-                )
+            return tracksArray
+                .filter { it["mediatype"].asText() == "audio" }
+                .map {
+                    SearchResult(
+                        author = it["creator"]?.asText() ?: "",
+                        title = it["title"]?.asText() ?: "",
+                        duration = 0,
+                        bpm = 0,
+                        tags = it["subject"].take(7).joinToString(", "),
+                        date = LocalDate.parse(
+                            it["publicdate"].asText(),
+                            DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'")
+                        ),
+                        externalLink = URI.create("https://archive.org/search?query=${it["identifier"].asText()}"),
+                        license = CCLicense.fromUrl(it["licenseurl"]?.asText() ?: ""),
+                        service = SearchService.INTERNETARCHIVE
+                    )
             }
         }
 

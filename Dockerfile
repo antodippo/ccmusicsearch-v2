@@ -9,6 +9,7 @@ RUN chmod +x /app/gradlew
 RUN ./gradlew --version
 
 COPY src /app/src
+RUN ./gradlew test --no-daemon
 RUN ./gradlew build --no-daemon
 
 # Run
