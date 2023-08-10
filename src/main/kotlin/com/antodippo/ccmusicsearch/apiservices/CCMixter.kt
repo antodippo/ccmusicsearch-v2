@@ -38,7 +38,7 @@ class CCMixter(private val apiClient: APIClient, private val printDuration: Prin
                     title = it["upload_name"].asText(),
                     duration = durationStringToSeconds(it["files"][0]["file_format_info"]["ps"].asText()),
                     bpm = it["upload_extra"]["bpm"].asInt(),
-                    tags = it["upload_extra"]["usertags"].asText(),
+                    tags = it["upload_extra"]["usertags"].asText().take(70),
                     date = LocalDate.parse(
                         it["upload_date_format"].asText(),
                         DateTimeFormatter.ofPattern("E, MMM d, yyyy @ h:mm a", Locale.ENGLISH)

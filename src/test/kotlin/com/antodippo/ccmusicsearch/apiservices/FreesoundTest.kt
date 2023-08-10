@@ -37,7 +37,7 @@ class FreesoundTest {
                 title = "1021 E11 chord arpeggio guitar.WAV",
                 duration = 19,
                 bpm = 0,
-                tags = "\"descending\", \"acoustic\", \"picked\", \"mystical\", \"E11\", \"airy\", \"thoughtful\"",
+                tags = "\"descending\", \"acoustic\", \"picked\", \"mystical\", \"E11\", \"airy\"",
                 date = LocalDate.parse("2023-08-05"),
                 externalLink = URI.create("https://freesound.org/people/daviddryden/sounds/698456/"),
                 license = CCLicense.CC_BY_NC,

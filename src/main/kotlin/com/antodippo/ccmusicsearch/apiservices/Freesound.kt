@@ -41,7 +41,7 @@ class Freesound(private val apiClient: APIClient, private val printDuration: Pri
                     title = it["name"].asText(),
                     duration = it["duration"].toString().toDouble().roundToInt(),
                     bpm = 0,
-                    tags = it["tags"].take(7).joinToString(", "),
+                    tags = it["tags"].take(7).joinToString(", ").take(70),
                     date = LocalDate.parse(it["created"].asText().substringBefore("T")),
                     externalLink = URI.create(it["url"].asText()),
                     license = CCLicense.fromUrl(it["license"].asText()),

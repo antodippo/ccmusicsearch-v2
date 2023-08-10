@@ -41,7 +41,7 @@ class InternetArchive(private val apiClient: APIClient, private val printDuratio
                         title = it["title"]?.asText() ?: "",
                         duration = 0,
                         bpm = 0,
-                        tags = it["subject"].take(7).joinToString(", "),
+                        tags = it["subject"].take(7).joinToString(", ").take(70),
                         date = LocalDate.parse(
                             it["publicdate"].asText(),
                             DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'")

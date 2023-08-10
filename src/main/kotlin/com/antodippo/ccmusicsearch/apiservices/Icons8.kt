@@ -45,7 +45,7 @@ class Icons8(private val apiClient: APIClient, private val printDuration: PrintD
                     title = it["name"].asText(),
                     duration = it["duration"].toString().toDouble().roundToInt(),
                     bpm = it["bpm"].asInt(),
-                    tags = it["tags"].take(7).joinToString(", "),
+                    tags = it["tags"].take(7).joinToString(", ").take(70),
                     date = this.getLocalDate(it["createdAt"].asText()),
                     externalLink = URI.create(it["preview"]["url"].asText()),
                     license = CCLicense.UNKNOWN,
