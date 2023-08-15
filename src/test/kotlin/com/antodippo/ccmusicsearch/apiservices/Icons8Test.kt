@@ -1,10 +1,11 @@
 package com.antodippo.ccmusicsearch.apiservices
 
-import com.antodippo.ccmusicsearch.ApiClientTestDouble
+import com.antodippo.ccmusicsearch.testdoubles.ApiClientThatReadsFromFile
 import com.antodippo.ccmusicsearch.CCLicense
 import com.antodippo.ccmusicsearch.SearchResult
 import com.antodippo.ccmusicsearch.SearchService
 import com.antodippo.ccmusicsearch.infra.PrintDuration
+import com.antodippo.ccmusicsearch.testdoubles.ApiClientThatThrows
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
@@ -17,7 +18,7 @@ class Icons8Test {
 
     @Test
     fun testItFetchesAJsonAndReturnsAListOfSearchResults() = runBlocking {
-        val icons8 = Icons8(ApiClientTestDouble(SearchService.ICONS8), PrintDuration())
+        val icons8 = Icons8(ApiClientThatReadsFromFile("icons8"), PrintDuration())
         val results = icons8.search("test")
 
         val expectedResults = listOf(
@@ -46,5 +47,21 @@ class Icons8Test {
         )
 
         assertEquals(expectedResults, results)
+    }
+
+    @Test
+    fun testItReturnsAnEmptyListWhenTheClientThrowsAnException() = runBlocking {
+        val icons8 = Icons8(ApiClientThatThrows(), PrintDuration())
+        val results = icons8.search("test")
+
+        assertEquals(emptyList<SearchResult>(), results)
+    }
+
+    @Test
+    fun testItReturnsAnEmptyListWhenTheClientReturnsAnEmptyJson() = runBlocking {
+        val icons8 = Icons8(ApiClientThatReadsFromFile("emptyresponse"), PrintDuration())
+        val results = icons8.search("test")
+
+        assertEquals(emptyList<SearchResult>(), results)
     }
 }

@@ -1,6 +1,5 @@
-package com.antodippo.ccmusicsearch
+package com.antodippo.ccmusicsearch.testdoubles
 
-import java.io.File
 import java.net.URI
 import java.net.http.HttpClient
 import java.net.http.HttpHeaders
@@ -9,16 +8,7 @@ import java.net.http.HttpResponse
 import java.util.*
 import javax.net.ssl.SSLSession
 
-class ApiClientTestDouble(private val service: SearchService) : APIClient {
-    override suspend fun get(uri: URI): HttpResponse<String> {
-        return HttpResponseDummy(
-            200,
-            File("src/test/kotlin/com/antodippo/ccmusicsearch/apiresponses/${service.toString().lowercase()}.json").readText()
-        )
-    }
-}
-
-class HttpResponseDummy (
+class HttpDummyResponse (
     private val statusCode: Int,
     private val body: String
 ) : HttpResponse<String> {
