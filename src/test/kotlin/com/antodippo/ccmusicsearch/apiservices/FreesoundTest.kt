@@ -4,7 +4,6 @@ import com.antodippo.ccmusicsearch.testdoubles.ApiClientThatReadsFromFile
 import com.antodippo.ccmusicsearch.CCLicense
 import com.antodippo.ccmusicsearch.SearchResult
 import com.antodippo.ccmusicsearch.SearchService
-import com.antodippo.ccmusicsearch.infra.PrintDuration
 import com.antodippo.ccmusicsearch.testdoubles.ApiClientThatThrows
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions.*
@@ -18,7 +17,7 @@ class FreesoundTest {
 
     @Test
     fun testItFetchesAJsonAndReturnsAListOfSearchResults() = runBlocking {
-        val freesound = Freesound(ApiClientThatReadsFromFile("freesound"), PrintDuration())
+        val freesound = Freesound(ApiClientThatReadsFromFile("freesound"))
         val results = freesound.search("test")
 
         val expectedResults = listOf(
@@ -51,7 +50,7 @@ class FreesoundTest {
 
     @Test
     fun testItReturnsAnEmptyListWhenTheClientThrowsAnException() = runBlocking {
-        val freesound = Freesound(ApiClientThatThrows(), PrintDuration())
+        val freesound = Freesound(ApiClientThatThrows())
         val results = freesound.search("test")
 
         assertEquals(emptyList<SearchResult>(), results)
@@ -59,7 +58,7 @@ class FreesoundTest {
 
     @Test
     fun testItReturnsAnEmptyListWhenTheClientReturnsAnEmptyJson() = runBlocking {
-        val freesound = Freesound(ApiClientThatReadsFromFile("emptyresponse"), PrintDuration())
+        val freesound = Freesound(ApiClientThatReadsFromFile("emptyresponse"))
         val results = freesound.search("test")
 
         assertEquals(emptyList<SearchResult>(), results)

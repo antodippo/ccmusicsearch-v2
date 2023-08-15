@@ -1,7 +1,6 @@
 package com.antodippo.ccmusicsearch.apiservices
 
 import com.antodippo.ccmusicsearch.*
-import com.antodippo.ccmusicsearch.infra.PrintDuration
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
@@ -12,10 +11,9 @@ import java.net.http.HttpResponse
 import java.time.LocalDate
 
 @Service
-class Jamendo(private val apiClient: APIClient, private val printDuration: PrintDuration) : APIService {
+class Jamendo(private val apiClient: APIClient) : APIService {
 
     override suspend fun search(query: String): List<SearchResult> {
-        printDuration.startMeasuringDuration(SearchService.JAMENDO.toString())
         val logger = KotlinLogging.logger {}
         val apiKey = System.getProperty("JAMENDO_API_KEY")
 
@@ -25,8 +23,6 @@ class Jamendo(private val apiClient: APIClient, private val printDuration: Print
         } catch (e: Exception) {
             logger.error { "Error while searching on Jamendo: ${e.message}" }
             return emptyList()
-        } finally {
-            printDuration.finishMeasuringDuration(SearchService.JAMENDO.toString())
         }
 
         val jsonBody = jacksonObjectMapper().readValue<JsonNode>(response.body())

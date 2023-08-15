@@ -1,7 +1,6 @@
 package com.antodippo.ccmusicsearch.apiservices
 
 import com.antodippo.ccmusicsearch.*
-import com.antodippo.ccmusicsearch.infra.PrintDuration
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
@@ -13,10 +12,9 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 @Service
-class InternetArchive(private val apiClient: APIClient, private val printDuration: PrintDuration) : APIService {
+class InternetArchive(private val apiClient: APIClient) : APIService {
 
     override suspend fun search(query: String): List<SearchResult> {
-        printDuration.startMeasuringDuration(SearchService.INTERNETARCHIVE.toString())
         val logger = KotlinLogging.logger {}
 
         val response: HttpResponse<String>
@@ -28,8 +26,6 @@ class InternetArchive(private val apiClient: APIClient, private val printDuratio
         } catch (e: Exception) {
             logger.error { "Error while searching on Internet Archive: ${e.message}" }
             return emptyList()
-        } finally {
-            printDuration.finishMeasuringDuration(SearchService.INTERNETARCHIVE.toString())
         }
 
         if (tracksArray != null && tracksArray.isArray) {

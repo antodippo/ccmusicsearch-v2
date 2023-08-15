@@ -2,7 +2,6 @@ package com.antodippo.ccmusicsearch
 
 import com.antodippo.ccmusicsearch.apiservices.CCMixter
 import com.antodippo.ccmusicsearch.apiservices.Jamendo
-import com.antodippo.ccmusicsearch.infra.PrintDuration
 import com.antodippo.ccmusicsearch.testdoubles.ApiClientThatReadsFromFile
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -18,10 +17,9 @@ class SearchEngineTest {
     fun testSearchServicesAreCalledAndResultsAreMerged() = runBlocking {
         val searchEngine = SearchEngine(
             listOf(
-                Jamendo(ApiClientThatReadsFromFile("jamendo"), PrintDuration()),
-                CCMixter(ApiClientThatReadsFromFile("ccmixter"), PrintDuration())
-            ),
-            PrintDuration()
+                Jamendo(ApiClientThatReadsFromFile("jamendo")),
+                CCMixter(ApiClientThatReadsFromFile("ccmixter"))
+            )
         )
 
         val results = searchEngine.search("test")

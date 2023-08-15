@@ -4,7 +4,6 @@ import com.antodippo.ccmusicsearch.testdoubles.ApiClientThatReadsFromFile
 import com.antodippo.ccmusicsearch.CCLicense
 import com.antodippo.ccmusicsearch.SearchResult
 import com.antodippo.ccmusicsearch.SearchService
-import com.antodippo.ccmusicsearch.infra.PrintDuration
 import com.antodippo.ccmusicsearch.testdoubles.ApiClientThatThrows
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions.*
@@ -18,7 +17,7 @@ class InternetArchiveTest {
 
     @Test
     fun testItFetchesAJsonAndReturnsAListOfSearchResults() = runBlocking {
-        val internetArchive = InternetArchive(ApiClientThatReadsFromFile("internetarchive"), PrintDuration())
+        val internetArchive = InternetArchive(ApiClientThatReadsFromFile("internetarchive"))
         val results = internetArchive.search("test")
 
         val expectedResults = listOf(
@@ -51,7 +50,7 @@ class InternetArchiveTest {
 
     @Test
     fun testItReturnsAnEmptyListWhenTheClientThrowsAnException() = runBlocking {
-        val internetArchive = InternetArchive(ApiClientThatThrows(), PrintDuration())
+        val internetArchive = InternetArchive(ApiClientThatThrows())
         val results = internetArchive.search("test")
 
         assertEquals(emptyList<SearchResult>(), results)
@@ -59,7 +58,7 @@ class InternetArchiveTest {
 
     @Test
     fun testItReturnsAnEmptyListWhenTheClientReturnsAnEmptyJson() = runBlocking {
-        val internetArchive = InternetArchive(ApiClientThatReadsFromFile("emptyresponse"), PrintDuration())
+        val internetArchive = InternetArchive(ApiClientThatReadsFromFile("emptyresponse"))
         val results = internetArchive.search("test")
 
         assertEquals(emptyList<SearchResult>(), results)

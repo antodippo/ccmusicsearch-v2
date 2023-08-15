@@ -1,11 +1,9 @@
 package com.antodippo.ccmusicsearch.apiservices
 
 import com.antodippo.ccmusicsearch.*
-import com.antodippo.ccmusicsearch.infra.PrintDuration
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
-import kotlinx.coroutines.delay
 import mu.KotlinLogging
 import org.springframework.stereotype.Service
 import java.net.URI
@@ -17,10 +15,9 @@ import java.time.ZoneId
 import kotlin.math.roundToInt
 
 @Service
-class Icons8(private val apiClient: APIClient, private val printDuration: PrintDuration) : APIService {
+class Icons8(private val apiClient: APIClient) : APIService {
 
     override suspend fun search(query: String): List<SearchResult> {
-        printDuration.startMeasuringDuration(SearchService.ICONS8.toString())
         val logger = KotlinLogging.logger {}
         val apiKey = System.getProperty("ICONS8_API_KEY")
 
@@ -33,11 +30,8 @@ class Icons8(private val apiClient: APIClient, private val printDuration: PrintD
         } catch (e: Exception) {
             logger.error { "Error while searching on Icons8: ${e.message}" }
             return emptyList()
-        } finally {
-            printDuration.finishMeasuringDuration(SearchService.ICONS8.toString())
         }
 
-        // TODO unit test this array(s) conditions
         if (tracksArray != null && tracksArray.isArray) {
             return tracksArray.map {
                 SearchResult(

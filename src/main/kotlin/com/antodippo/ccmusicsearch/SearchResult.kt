@@ -1,7 +1,6 @@
 package com.antodippo.ccmusicsearch
 
 import com.antodippo.ccmusicsearch.apiservices.*
-import com.antodippo.ccmusicsearch.infra.PrintDuration
 import java.net.URI
 import java.time.LocalDate
 
@@ -24,11 +23,11 @@ enum class SearchService {
 
     fun toService(): APIService {
         return when (this) {
-            JAMENDO -> Jamendo(ApiClientViaHttp(), PrintDuration())
-            CCMIXTER -> CCMixter(ApiClientViaHttp(), PrintDuration())
-            ICONS8 -> Icons8(ApiClientViaHttp(), PrintDuration())
-            INTERNETARCHIVE -> InternetArchive(ApiClientViaHttp(), PrintDuration())
-            FREESOUND -> Freesound(ApiClientViaHttp(), PrintDuration())
+            JAMENDO -> Jamendo(ApiClientViaHttp())
+            CCMIXTER -> CCMixter(ApiClientViaHttp())
+            ICONS8 -> Icons8(ApiClientViaHttp())
+            INTERNETARCHIVE -> InternetArchive(ApiClientViaHttp())
+            FREESOUND -> Freesound(ApiClientViaHttp())
         }
     }
 

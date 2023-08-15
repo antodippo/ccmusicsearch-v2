@@ -1,7 +1,6 @@
 package com.antodippo.ccmusicsearch.apiservices
 
 import com.antodippo.ccmusicsearch.*
-import com.antodippo.ccmusicsearch.infra.PrintDuration
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
@@ -14,9 +13,8 @@ import java.time.format.DateTimeFormatter
 import java.util.*
 
 @Service
-class CCMixter(private val apiClient: APIClient, private val printDuration: PrintDuration): APIService {
+class CCMixter(private val apiClient: APIClient): APIService {
     override suspend fun search(query: String): Collection<SearchResult> {
-        printDuration.startMeasuringDuration(SearchService.CCMIXTER.toString())
         val logger = KotlinLogging.logger {}
 
         val response : HttpResponse<String>
@@ -26,8 +24,6 @@ class CCMixter(private val apiClient: APIClient, private val printDuration: Prin
         } catch (e: Exception) {
             logger.error { "Error while searching on CCMixter: ${e.message}" }
             return emptyList()
-        } finally {
-            printDuration.finishMeasuringDuration(SearchService.CCMIXTER.toString())
         }
 
         val jsonBody = jacksonObjectMapper().readValue<JsonNode>(response.body())
