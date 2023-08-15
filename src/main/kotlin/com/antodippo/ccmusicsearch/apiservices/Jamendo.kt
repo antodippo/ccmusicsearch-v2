@@ -21,7 +21,7 @@ class Jamendo(private val apiClient: APIClient, private val printDuration: Print
 
         val response : HttpResponse<String>
         try {
-            response = apiClient.get(URI("https://api.jamendo.com/v3.0/tracks/?client_id=$apiKey&format=jsonpretty&limit=20&search=$query"))
+            response = apiClient.get(URI("https://api.jamendo.com/v3.0/tracks/?client_id=$apiKey&format=jsonpretty&order=releasedate_desc&limit=20&search=$query"))
         } catch (e: Exception) {
             logger.error { "Error while searching on Jamendo: ${e.message}" }
             return emptyList()
