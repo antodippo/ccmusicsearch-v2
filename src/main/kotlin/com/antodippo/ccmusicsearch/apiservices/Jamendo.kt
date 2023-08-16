@@ -7,6 +7,7 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import mu.KotlinLogging
 import org.springframework.stereotype.Service
 import java.net.URI
+import java.net.URLEncoder
 import java.net.http.HttpResponse
 import java.time.LocalDate
 
@@ -16,10 +17,11 @@ class Jamendo(private val apiClient: APIClient) : APIService {
     override suspend fun search(query: String): List<SearchResult> {
         val logger = KotlinLogging.logger {}
         val apiKey = System.getProperty("JAMENDO_API_KEY")
+        val escapedQuery = URLEncoder.encode(query, "UTF-8")
 
         val response : HttpResponse<String>
         try {
-            response = apiClient.get(URI("https://api.jamendo.com/v3.0/tracks/?client_id=$apiKey&format=jsonpretty&order=releasedate_desc&limit=20&search=$query"))
+            response = apiClient.get(URI("https://api.jamendo.com/v3.0/tracks/?client_id=$apiKey&format=jsonpretty&order=releasedate_desc&limit=20&search=$escapedQuery"))
         } catch (e: Exception) {
             logger.error { "Error while searching on Jamendo: ${e.message}" }
             return emptyList()

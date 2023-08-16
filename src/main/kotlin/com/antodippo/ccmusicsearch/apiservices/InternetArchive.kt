@@ -7,6 +7,7 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import mu.KotlinLogging
 import org.springframework.stereotype.Service
 import java.net.URI
+import java.net.URLEncoder
 import java.net.http.HttpResponse
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -16,11 +17,12 @@ class InternetArchive(private val apiClient: APIClient) : APIService {
 
     override suspend fun search(query: String): List<SearchResult> {
         val logger = KotlinLogging.logger {}
+        val escapedQuery = URLEncoder.encode(query, "UTF-8")
 
         val response: HttpResponse<String>
         val tracksArray: JsonNode?
         try {
-            response = apiClient.get(URI("https://archive.org/advancedsearch.php?q=subject:$query&rows=20&output=json&mediatype=audio&sort=createdate+desc"))
+            response = apiClient.get(URI("https://archive.org/advancedsearch.php?q=subject:$escapedQuery&rows=20&output=json&mediatype=audio&sort=createdate+desc"))
             val jsonBody = jacksonObjectMapper().readValue<JsonNode>(response.body())
             tracksArray = jsonBody["response"]["docs"]
         } catch (e: Exception) {

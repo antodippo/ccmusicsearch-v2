@@ -7,6 +7,7 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import mu.KotlinLogging
 import org.springframework.stereotype.Service
 import java.net.URI
+import java.net.URLEncoder
 import java.net.http.HttpResponse
 import java.time.Instant
 import java.time.LocalDate
@@ -20,11 +21,12 @@ class Icons8(private val apiClient: APIClient) : APIService {
     override suspend fun search(query: String): List<SearchResult> {
         val logger = KotlinLogging.logger {}
         val apiKey = System.getProperty("ICONS8_API_KEY")
+        val escapedQuery = URLEncoder.encode(query, "UTF-8")
 
         val response: HttpResponse<String>
         val tracksArray: JsonNode?
         try {
-            response = apiClient.get(URI("https://api-music.icons8.com/api/v2/tracks?token=$apiKey&search=$query&perPage=20"))
+            response = apiClient.get(URI("https://api-music.icons8.com/api/v2/tracks?token=$apiKey&search=$escapedQuery&perPage=20"))
             val jsonBody = jacksonObjectMapper().readValue<JsonNode>(response.body())
             tracksArray = jsonBody["tracks"]
         } catch (e: Exception) {
