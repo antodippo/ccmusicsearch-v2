@@ -24,7 +24,7 @@ dependencies {
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
 	implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.15.+")
 	implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
-	implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.6.3")
+	implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.7.3")
 	implementation("io.projectreactor:reactor-core")
 	implementation("io.github.cdimascio:dotenv-kotlin:6.4.1")
 	implementation("io.github.microutils:kotlin-logging-jvm:2.0.11")
