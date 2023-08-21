@@ -5,6 +5,7 @@ plugins {
 	id("io.spring.dependency-management") version "1.1.3"
 	kotlin("jvm") version "1.9.0"
 	kotlin("plugin.spring") version "1.9.0"
+	id("info.solidsoft.pitest") version "1.9.0"
 }
 
 group = "com.antodippo"
@@ -41,4 +42,14 @@ tasks.withType<KotlinCompile> {
 
 tasks.withType<Test> {
 	useJUnitPlatform()
+}
+
+pitest {
+	setProperty("pitestVersion", "1.9.0")
+	setProperty("junit5PluginVersion", "1.0.0")
+	setProperty("targetClasses", listOf("com.antodippo.ccmusicsearch.*"))
+	setProperty("outputFormats", listOf("HTML"))
+	setProperty("threads", 2)
+	setProperty("mutationThreshold", 29)
+	setProperty("withHistory", true)
 }

@@ -28,3 +28,6 @@ jobs:
 
       - name: Run Tests
         run: ./gradlew test
+
+      - name: Run Mutation Tests
+        run: ./gradlew pitest
