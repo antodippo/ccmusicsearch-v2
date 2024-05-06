@@ -23,7 +23,7 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-web")
 	implementation("org.springframework.boot:spring-boot-starter-mustache")
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
-	implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.16.+")
+	implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.17.+")
 	implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.0")
 	implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.8.0")
 	implementation("io.projectreactor:reactor-core")
