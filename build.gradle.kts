@@ -27,7 +27,7 @@ dependencies {
 	implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.1")
 	implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.8.1")
 	implementation("io.projectreactor:reactor-core")
-	implementation("io.github.cdimascio:dotenv-kotlin:6.4.1")
+	implementation("io.github.cdimascio:dotenv-kotlin:6.4.2")
 	implementation("io.github.microutils:kotlin-logging-jvm:3.0.5")
 	compileOnly("org.springframework.boot:spring-boot-devtools")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
