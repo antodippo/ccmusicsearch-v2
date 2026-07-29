@@ -14,7 +14,7 @@ import java.time.LocalDate
 class SearchEngineTest {
 
     @Test
-    fun testSearchServicesAreCalledAndResultsAreMerged() = runBlocking {
+    fun testSearchServicesAreCalledAndResultsAreMergedByRelevance() = runBlocking {
         val searchEngine = SearchEngine(
             listOf(
                 Jamendo(ApiClientThatReadsFromFile("jamendo")),
@@ -24,6 +24,8 @@ class SearchEngineTest {
 
         val results = searchEngine.search("test")
 
+        // Services are interleaved by fused rank rather than concatenated, and no longer
+        // ordered by date — the oldest of the four (2014-06-27) sits third.
         val expectedResults = listOf(
             SearchResult(
                 author = "Arnold Wohler",
@@ -37,17 +39,6 @@ class SearchEngineTest {
                 service = SearchService.JAMENDO
             ),
             SearchResult(
-                author = "Agnes",
-                title = "Znajdź swój blask",
-                duration = 195,
-                bpm = 0,
-                tags = "",
-                date = LocalDate.parse("2020-05-01"),
-                externalLink = URI.create("https://www.jamendo.com/track/1759840"),
-                license = CCLicense.CC_BY_NC_ND,
-                service = SearchService.JAMENDO
-            ),
-            SearchResult(
                 author = "Reiswerk",
                 title = "Luwan House feat Sonja V",
                 duration = 148,
@@ -56,7 +47,8 @@ class SearchEngineTest {
                 date = LocalDate.parse("2014-07-01"),
                 externalLink = URI.create("http://ccmixter.org/files/Reiswerk/46456"),
                 license = CCLicense.CC_BY_NC,
-                service = SearchService.CCMIXTER
+                service = SearchService.CCMIXTER,
+                popularity = 6
             ),
             SearchResult(
                 author = "JeffSpeed68",
@@ -67,7 +59,19 @@ class SearchEngineTest {
                 date = LocalDate.parse("2014-06-27"),
                 externalLink = URI.create("http://ccmixter.org/files/JeffSpeed68/46416"),
                 license = CCLicense.CC_BY,
-                service = SearchService.CCMIXTER
+                service = SearchService.CCMIXTER,
+                popularity = 9
+            ),
+            SearchResult(
+                author = "Agnes",
+                title = "Znajdź swój blask",
+                duration = 195,
+                bpm = 0,
+                tags = "",
+                date = LocalDate.parse("2020-05-01"),
+                externalLink = URI.create("https://www.jamendo.com/track/1759840"),
+                license = CCLicense.CC_BY_NC_ND,
+                service = SearchService.JAMENDO
             )
         )
 

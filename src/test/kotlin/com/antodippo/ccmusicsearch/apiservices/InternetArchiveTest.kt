@@ -4,6 +4,7 @@ import com.antodippo.ccmusicsearch.testdoubles.ApiClientThatReadsFromFile
 import com.antodippo.ccmusicsearch.CCLicense
 import com.antodippo.ccmusicsearch.SearchResult
 import com.antodippo.ccmusicsearch.SearchService
+import com.antodippo.ccmusicsearch.testdoubles.ApiClientThatReturnsAnEmptyBody
 import com.antodippo.ccmusicsearch.testdoubles.ApiClientThatThrows
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions.*
@@ -28,9 +29,10 @@ class InternetArchiveTest {
                 bpm = 0,
                 tags = "\"drone\", \"psychedelic\", \"folk\"",
                 date = LocalDate.parse("2016-07-14"),
-                externalLink = URI.create("https://archive.org/search?query=NaturalSnowBuildings-Aldebaran2016"),
+                externalLink = URI.create("https://archive.org/details/NaturalSnowBuildings-Aldebaran2016"),
                 license = CCLicense.CC_BY_NC_ND,
-                service = SearchService.INTERNETARCHIVE
+                service = SearchService.INTERNETARCHIVE,
+                popularity = 2300
             ),
             SearchResult(
                 author = "El Chata de Vicalvaro",
@@ -39,9 +41,10 @@ class InternetArchiveTest {
                 bpm = 0,
                 tags = "\"78rpm\", \"Folk\"",
                 date = LocalDate.parse("2018-04-26"),
-                externalLink = URI.create("https://archive.org/search?query=78_cante-de-levante-amores-no-ha-de-buscar"),
+                externalLink = URI.create("https://archive.org/details/78_cante-de-levante-amores-no-ha-de-buscar"),
                 license = CCLicense.UNKNOWN,
-                service = SearchService.INTERNETARCHIVE
+                service = SearchService.INTERNETARCHIVE,
+                popularity = 500
             )
         )
 
@@ -59,6 +62,14 @@ class InternetArchiveTest {
     @Test
     fun testItReturnsAnEmptyListWhenTheClientReturnsAnEmptyJson() = runBlocking {
         val internetArchive = InternetArchive(ApiClientThatReadsFromFile("emptyresponse"))
+        val results = internetArchive.search("test")
+
+        assertEquals(emptyList<SearchResult>(), results)
+    }
+
+    @Test
+    fun testItReturnsAnEmptyListWhenTheClientReturnsAnEmptyBody() = runBlocking {
+        val internetArchive = InternetArchive(ApiClientThatReturnsAnEmptyBody())
         val results = internetArchive.search("test")
 
         assertEquals(emptyList<SearchResult>(), results)

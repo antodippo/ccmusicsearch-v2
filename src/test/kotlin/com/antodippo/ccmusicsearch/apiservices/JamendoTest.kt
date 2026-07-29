@@ -4,6 +4,7 @@ import com.antodippo.ccmusicsearch.testdoubles.ApiClientThatReadsFromFile
 import com.antodippo.ccmusicsearch.CCLicense
 import com.antodippo.ccmusicsearch.SearchResult
 import com.antodippo.ccmusicsearch.SearchService
+import com.antodippo.ccmusicsearch.testdoubles.ApiClientThatReturnsAnEmptyBody
 import com.antodippo.ccmusicsearch.testdoubles.ApiClientThatThrows
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions.*
@@ -59,6 +60,14 @@ class JamendoTest {
     @Test
     fun testItReturnsAnEmptyListWhenTheClientReturnsAnEmptyJson() = runBlocking {
         val jamendo = Jamendo(ApiClientThatReadsFromFile("emptyresponse"))
+        val results = jamendo.search("test")
+
+        assertEquals(emptyList<SearchResult>(), results)
+    }
+
+    @Test
+    fun testItReturnsAnEmptyListWhenTheClientReturnsAnEmptyBody() = runBlocking {
+        val jamendo = Jamendo(ApiClientThatReturnsAnEmptyBody())
         val results = jamendo.search("test")
 
         assertEquals(emptyList<SearchResult>(), results)

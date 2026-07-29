@@ -13,13 +13,10 @@ class SearchEngine(
 ) {
 
     suspend fun search(query: String): List<SearchResult> = coroutineScope {
-        val results = mutableListOf<SearchResult>()
-        searchServices.map {
-            async {
-                results.addAll(it.search(query))
-            }
-        }.awaitAll()
+        val resultsByService = searchServices
+            .map { async { it.search(query) } }
+            .awaitAll()
 
-        return@coroutineScope results.sortedByDescending { it.date }
+        return@coroutineScope RelevanceRanker.rank(resultsByService)
     }
 }

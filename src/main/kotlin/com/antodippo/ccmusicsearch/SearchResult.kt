@@ -16,6 +16,9 @@ data class SearchResult(
     val licenseUrl: URI = license.toLicenseUrl(),
     val licenseLogoUrl: URI = license.toLicenseLogoUrl(),
     val service: SearchService,
+    // Whatever the service uses to say "people came back to this one": plays, downloads,
+    // ratings. Only comparable within a single service, never across them.
+    val popularity: Long? = null,
 )
 
 enum class SearchService {

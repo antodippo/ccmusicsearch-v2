@@ -15,14 +15,32 @@ import java.time.format.DateTimeFormatter
 @Service
 class InternetArchive(private val apiClient: APIClient) : APIService {
 
+    // The archive is mostly not music: lectures, radio shows, podcasts and live sets all
+    // live under mediatype:audio. audio_music and netlabels are the two collections that
+    // hold released music, and licenseurl:(*http*) drops the "taper permitted" live
+    // recordings, which are freely shared but not Creative Commons.
+    private val musicOnly =
+        "mediatype:(audio) AND collection:(audio_music OR netlabels) AND licenseurl:(*http*)"
+
+    private val fields = listOf(
+        "identifier", "title", "creator", "subject",
+        "licenseurl", "publicdate", "downloads", "mediatype"
+    )
+
     override suspend fun search(query: String): List<SearchResult> {
         val logger = KotlinLogging.logger {}
-        val escapedQuery = URLEncoder.encode(query, "UTF-8")
+        val escapedQuery = URLEncoder.encode("$query AND $musicOnly", "UTF-8")
+        val fieldParams = fields.joinToString("") { "&fl%5B%5D=$it" }
 
         val response: HttpResponse<String>
         val tracksArray: JsonNode?
         try {
-            response = apiClient.get(URI("https://archive.org/advancedsearch.php?q=subject:$escapedQuery&rows=20&output=json&mediatype=audio&sort=createdate+desc"))
+            // No sort parameter: the archive defaults to relevance, which is what we want.
+            // mediatype has to be part of q — passing it as its own parameter is rejected
+            // with [UNSUPPORTED_VALUE] and there is no "response" key to read back.
+            response = apiClient.get(
+                URI("https://archive.org/advancedsearch.php?q=$escapedQuery&rows=50&output=json$fieldParams")
+            )
             val jsonBody = jacksonObjectMapper().readValue<JsonNode>(response.body())
             tracksArray = jsonBody["response"]["docs"]
         } catch (e: Exception) {
@@ -32,7 +50,7 @@ class InternetArchive(private val apiClient: APIClient) : APIService {
 
         if (tracksArray != null && tracksArray.isArray) {
             return tracksArray
-                .filter { it["mediatype"].asText() == "audio" }
+                .filter { it["mediatype"]?.asText() == "audio" }
                 .map {
                     SearchResult(
                         author = it["creator"]?.asText() ?: "",
@@ -44,9 +62,10 @@ class InternetArchive(private val apiClient: APIClient) : APIService {
                             it["publicdate"].asText(),
                             DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'")
                         ),
-                        externalLink = URI.create("https://archive.org/search?query=${it["identifier"].asText()}"),
+                        externalLink = URI.create("https://archive.org/details/${it["identifier"].asText()}"),
                         license = CCLicense.fromUrl(it["licenseurl"]?.asText() ?: ""),
-                        service = SearchService.INTERNETARCHIVE
+                        service = SearchService.INTERNETARCHIVE,
+                        popularity = it["downloads"]?.asLong()
                     )
             }
         }
