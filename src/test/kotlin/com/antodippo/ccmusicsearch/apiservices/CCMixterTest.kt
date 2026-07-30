@@ -4,6 +4,7 @@ import com.antodippo.ccmusicsearch.testdoubles.ApiClientThatReadsFromFile
 import com.antodippo.ccmusicsearch.CCLicense
 import com.antodippo.ccmusicsearch.SearchResult
 import com.antodippo.ccmusicsearch.SearchService
+import com.antodippo.ccmusicsearch.testdoubles.ApiClientThatReturnsAnEmptyBody
 import com.antodippo.ccmusicsearch.testdoubles.ApiClientThatThrows
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions.*
@@ -30,7 +31,8 @@ class CCMixterTest {
                 date = LocalDate.parse("2014-07-01"),
                 externalLink = URI.create("http://ccmixter.org/files/Reiswerk/46456"),
                 license = CCLicense.CC_BY_NC,
-                service = SearchService.CCMIXTER
+                service = SearchService.CCMIXTER,
+                popularity = 6
             ),
             SearchResult(
                 author = "JeffSpeed68",
@@ -41,7 +43,8 @@ class CCMixterTest {
                 date = LocalDate.parse("2014-06-27"),
                 externalLink = URI.create("http://ccmixter.org/files/JeffSpeed68/46416"),
                 license = CCLicense.CC_BY,
-                service = SearchService.CCMIXTER
+                service = SearchService.CCMIXTER,
+                popularity = 9
             )
         )
 
@@ -58,7 +61,15 @@ class CCMixterTest {
 
     @Test
     fun testItReturnsAnEmptyListWhenTheClientReturnsAnEmptyJson() = runBlocking {
-        val ccMixter = CCMixter(ApiClientThatReadsFromFile("empty"))
+        val ccMixter = CCMixter(ApiClientThatReadsFromFile("emptyresponse"))
+        val results = ccMixter.search("test")
+
+        assertEquals(emptyList<SearchResult>(), results)
+    }
+
+    @Test
+    fun testItReturnsAnEmptyListWhenTheClientReturnsAnEmptyBody() = runBlocking {
+        val ccMixter = CCMixter(ApiClientThatReturnsAnEmptyBody())
         val results = ccMixter.search("test")
 
         assertEquals(emptyList<SearchResult>(), results)

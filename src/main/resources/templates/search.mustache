@@ -138,7 +138,9 @@
         $('#dataTable').DataTable({
             paging: true,
             pageLength: 25,
-            order: [[5, 'desc']]
+            // Empty on purpose: the server already ordered these by relevance, and any
+            // column sort here would throw that away.
+            order: []
         });
 
         // Search functionality

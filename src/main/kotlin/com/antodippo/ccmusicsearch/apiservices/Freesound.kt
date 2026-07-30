@@ -23,12 +23,17 @@ class Freesound(private val apiClient: APIClient) : APIService {
         val response: HttpResponse<String>
         val tracksArray: JsonNode?
         try {
-            val fields = "id,name,username,tags,duration,created,url,license"
-            response = apiClient.get(URI("https://freesound.org/apiv2/search/text/?token=$apiKey&query=$escapedQuery&sort=created_desc&fields=$fields&page_size=5"))
+            val fields = "id,name,username,tags,duration,created,url,license,num_downloads"
+            // sort=score is Freesound's relevance order. The duration floor is the only
+            // lever that separates pieces of music from the one-shots and loops that make
+            // up most of the library — it stays a sample site, so RelevanceRanker also
+            // weights it below the music services.
+            val filter = URLEncoder.encode("duration:[60 TO *]", "UTF-8")
+            response = apiClient.get(URI("https://freesound.org/apiv2/search/text/?token=$apiKey&query=$escapedQuery&sort=score&filter=$filter&fields=$fields&page_size=50"))
             val jsonBody = jacksonObjectMapper().readValue<JsonNode>(response.body())
             tracksArray = jsonBody["results"]
         } catch (e: Exception) {
-            logger.error { "Error while searching on Internet Archive: ${e.message}" }
+            logger.error { "Error while searching on Freesound: ${e.message}" }
             return emptyList()
         }
 
@@ -43,7 +48,8 @@ class Freesound(private val apiClient: APIClient) : APIService {
                     date = LocalDate.parse(it["created"].asText().substringBefore("T")),
                     externalLink = URI.create(it["url"].asText()),
                     license = CCLicense.fromUrl(it["license"].asText()),
-                    service = SearchService.FREESOUND
+                    service = SearchService.FREESOUND,
+                    popularity = it["num_downloads"]?.asLong()
                 )
             }
         }
