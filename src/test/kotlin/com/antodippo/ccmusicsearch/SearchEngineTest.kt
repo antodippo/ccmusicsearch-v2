@@ -1,10 +1,12 @@
 package com.antodippo.ccmusicsearch
 
+import com.antodippo.ccmusicsearch.apiservices.APIService
 import com.antodippo.ccmusicsearch.apiservices.CCMixter
 import com.antodippo.ccmusicsearch.apiservices.Jamendo
 import com.antodippo.ccmusicsearch.testdoubles.ApiClientThatReadsFromFile
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import org.springframework.boot.test.context.SpringBootTest
 import java.net.URI
@@ -76,6 +78,27 @@ class SearchEngineTest {
         )
 
         assertEquals(expectedResults, results)
+    }
+
+    @Test
+    fun testOneServiceFailingDoesNotTakeDownTheRestOfTheSearch() = runBlocking {
+        val searchEngine = SearchEngine(
+            listOf(
+                ServiceThatThrows(),
+                Jamendo(ApiClientThatReadsFromFile("jamendo"))
+            )
+        )
+
+        val results = searchEngine.search("test")
+
+        assertEquals(2, results.size)
+        assertTrue(results.all { it.service == SearchService.JAMENDO })
+    }
+
+    private class ServiceThatThrows : APIService {
+        override suspend fun search(query: String): Collection<SearchResult> {
+            throw NullPointerException("get(...) must not be null")
+        }
     }
 
 }
