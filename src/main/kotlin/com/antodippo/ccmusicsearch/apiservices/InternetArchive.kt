@@ -10,10 +10,11 @@ import java.net.URI
 import java.net.URLEncoder
 import java.net.http.HttpResponse
 import java.time.LocalDate
-import java.time.format.DateTimeFormatter
 
 @Service
 class InternetArchive(private val apiClient: APIClient) : APIService {
+
+    private val logger = KotlinLogging.logger {}
 
     // The archive is mostly not music: lectures, radio shows, podcasts and live sets all
     // live under mediatype:audio. audio_music and netlabels are the two collections that
@@ -28,7 +29,6 @@ class InternetArchive(private val apiClient: APIClient) : APIService {
     )
 
     override suspend fun search(query: String): List<SearchResult> {
-        val logger = KotlinLogging.logger {}
         val escapedQuery = URLEncoder.encode("$query AND $musicOnly", "UTF-8")
         val fieldParams = fields.joinToString("") { "&fl%5B%5D=$it" }
 
@@ -51,25 +51,54 @@ class InternetArchive(private val apiClient: APIClient) : APIService {
         if (tracksArray != null && tracksArray.isArray) {
             return tracksArray
                 .filter { it["mediatype"]?.asText() == "audio" }
-                .map {
-                    SearchResult(
-                        author = it["creator"]?.asText() ?: "",
-                        title = it["title"]?.asText() ?: "",
-                        duration = 0,
-                        bpm = 0,
-                        tags = it["subject"].take(7).joinToString(", ").take(70),
-                        date = LocalDate.parse(
-                            it["publicdate"].asText(),
-                            DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'")
-                        ),
-                        externalLink = URI.create("https://archive.org/details/${it["identifier"].asText()}"),
-                        license = CCLicense.fromUrl(it["licenseurl"]?.asText() ?: ""),
-                        service = SearchService.INTERNETARCHIVE,
-                        popularity = it["downloads"]?.asLong()
-                    )
-            }
+                .mapNotNull { toSearchResult(it) }
         }
 
         return emptyList()
+    }
+
+    /**
+     * Null when the item cannot be turned into a result at all.
+     *
+     * The archive's metadata is filled in by whoever uploaded the item, so every field
+     * here is optional in practice however standard it looks: roughly one item in fifty
+     * carries no subject, and a few percent give subject as a bare string rather than a
+     * list. Anything unusable costs us that one item — never the response, and never
+     * the other services, which is what happens if this throws inside SearchEngine's
+     * coroutineScope.
+     */
+    private fun toSearchResult(doc: JsonNode): SearchResult? {
+        // The only two without a sensible stand-in: there is nothing to link to without
+        // an identifier, and SearchResult.date is not nullable.
+        val identifier = doc["identifier"]?.asText() ?: return null
+        val publicDate = doc["publicdate"]?.asText() ?: return null
+
+        return try {
+            SearchResult(
+                author = doc["creator"]?.asText() ?: "",
+                title = doc["title"]?.asText() ?: "",
+                duration = 0,
+                bpm = 0,
+                tags = tags(doc["subject"]),
+                // Always yyyy-MM-ddTHH:mm:ssZ today, but cutting at the T keeps a change
+                // of precision at the other end from costing us the item.
+                date = LocalDate.parse(publicDate.substringBefore("T")),
+                externalLink = URI.create("https://archive.org/details/$identifier"),
+                license = CCLicense.fromUrl(doc["licenseurl"]?.asText() ?: ""),
+                service = SearchService.INTERNETARCHIVE,
+                popularity = doc["downloads"]?.asLong()
+            )
+        } catch (e: Exception) {
+            logger.warn { "Skipping Internet Archive item $identifier: ${e.message}" }
+            null
+        }
+    }
+
+    private fun tags(subject: JsonNode?): String = when {
+        subject == null -> ""
+        // Uploaders who typed their subjects into one field instead of several. Without
+        // this they iterate as a node with no children and the item shows no tags.
+        subject.isTextual -> subject.asText().take(70)
+        else -> subject.take(7).joinToString(", ").take(70)
     }
 }

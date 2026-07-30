@@ -1,0 +1,74 @@
+{
+  "responseHeader": {
+    "status": 0,
+    "QTime": 61,
+    "params": {
+      "query": "jazz AND mediatype:(audio) AND collection:(audio_music OR netlabels) AND licenseurl:(*http*)",
+      "fields": "identifier,title,creator,subject,licenseurl,publicdate,downloads,mediatype",
+      "wt": "json",
+      "rows": "5",
+      "start": 0
+    }
+  },
+  "response": {
+    "numFound": 42950,
+    "start": 0,
+    "docs": [
+      {
+        "creator": "Natural Snow Buildings",
+        "downloads": 2300,
+        "identifier": "NaturalSnowBuildings-Aldebaran2016",
+        "licenseurl": "http://creativecommons.org/licenses/by-nc-nd/4.0/",
+        "mediatype": "audio",
+        "publicdate": "2016-07-14T09:41:52Z",
+        "subject": [
+          "drone",
+          "psychedelic",
+          "folk"
+        ],
+        "title": "Aldebaran [2016]"
+      },
+      {
+        "creator": "Aleksi Eeben",
+        "downloads": 6690,
+        "identifier": "mtk201",
+        "licenseurl": "http://creativecommons.org/licenses/by-nc-nd/3.0/us/",
+        "mediatype": "audio",
+        "publicdate": "2008-04-26T18:57:52Z",
+        "title": "Aleksi Eeben - The Four Tales [mtk201]"
+      },
+      {
+        "creator": "Left",
+        "downloads": 18251,
+        "identifier": "EMC23002Another_hour_of_EMCradio",
+        "licenseurl": "http://creativecommons.org/licenses/by-nc-nd/2.5/",
+        "mediatype": "audio",
+        "publicdate": "2006-07-23T18:34:38Z",
+        "subject": "EMCradio, compilation, independent, eclectic",
+        "title": "Another Hour of EMCradio"
+      },
+      {
+        "creator": "No Publicdate",
+        "downloads": 12,
+        "identifier": "item-without-a-publicdate",
+        "licenseurl": "http://creativecommons.org/licenses/by/4.0/",
+        "mediatype": "audio",
+        "subject": [
+          "jazz"
+        ],
+        "title": "Item without a publicdate"
+      },
+      {
+        "creator": "No Identifier",
+        "downloads": 34,
+        "licenseurl": "http://creativecommons.org/licenses/by/4.0/",
+        "mediatype": "audio",
+        "publicdate": "2019-02-11T10:00:00Z",
+        "subject": [
+          "jazz"
+        ],
+        "title": "Item without an identifier"
+      }
+    ]
+  }
+}
