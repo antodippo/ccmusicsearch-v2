@@ -99,6 +99,8 @@ class InternetArchive(private val apiClient: APIClient) : APIService {
         // Uploaders who typed their subjects into one field instead of several. Without
         // this they iterate as a node with no children and the item shows no tags.
         subject.isTextual -> subject.asText().take(70)
-        else -> subject.take(7).joinToString(", ").take(70)
+        // asText() rather than the node itself: a JsonNode stringifies back to JSON, which
+        // would carry its quotes into the tag.
+        else -> subject.take(7).joinToString(", ") { it.asText() }.take(70)
     }
 }
