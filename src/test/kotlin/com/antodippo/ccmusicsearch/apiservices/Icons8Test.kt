@@ -26,7 +26,7 @@ class Icons8Test {
                 title = "Creepy Orchestra",
                 duration = 76,
                 bpm = 128,
-                tags = "\"Atmospheric\", \"Beautiful\", \"Easy Listening\"",
+                tags = "Atmospheric, Beautiful, Easy Listening",
                 date = LocalDate.parse("2023-08-02"),
                 externalLink = URI.create("https://music-cdn.icons8.com/preview_low/100/2e7cedd0-2ba1-4f7a-8467-077cff6c144a.mp3"),
                 license = CCLicense.UNKNOWN,

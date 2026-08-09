@@ -11,13 +11,8 @@ class SearchController(private val searchEngine: SearchEngine) {
     @GetMapping("/")
     suspend fun search(searchModel: Model, @RequestParam q: String?): String {
 
-        if (q != null) {
-            searchModel["q"] = q
-            searchModel["songs"] = this.searchEngine.search(q)
-        } else {
-            searchModel["q"] = ""
-            searchModel["songs"] = emptyList<SearchResult>()
-        }
+        val songs = if (q != null) this.searchEngine.search(q) else emptyList()
+        searchModel["page"] = SearchPage.from(q, songs)
 
         return "search"
     }

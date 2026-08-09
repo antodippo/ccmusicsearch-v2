@@ -44,7 +44,9 @@ class Freesound(private val apiClient: APIClient) : APIService {
                     title = it["name"].asText(),
                     duration = it["duration"].toString().toDouble().roundToInt(),
                     bpm = 0,
-                    tags = it["tags"].take(7).joinToString(", ").take(70),
+                    // asText() rather than the node itself: a JsonNode stringifies back to
+                    // JSON, which would carry its quotes into the tag.
+                    tags = it["tags"].take(7).joinToString(", ") { tag -> tag.asText() }.take(70),
                     date = LocalDate.parse(it["created"].asText().substringBefore("T")),
                     externalLink = URI.create(it["url"].asText()),
                     license = CCLicense.fromUrl(it["license"].asText()),
