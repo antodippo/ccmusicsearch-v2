@@ -4,124 +4,323 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CCMusic search</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootswatch@5.3.0/dist/sketchy/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap5.min.css" rel="stylesheet">
-    <link rel="icon" type="image/x-icon" href="favicon.ico" />
-    <style>
-        #dataTable th,
-        #dataTable td {
-          vertical-align: middle;
-        }
-        #dataTable {
-          width: 100%;
-        }
-        .footer {
-            margin-top: 50px;
-            margin-bottom: 20px;
-        }
-    </style>
-
-
+    <meta name="description" content="A search engine for Creative Commons music.">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="/ds/styles.css">
+    <link rel="stylesheet" href="/css/search.css">
+    <script>
+        // Runs before first paint: a dark-theme reload must not flash the light ground.
+        // Setting data-js here is also what reveals the controls that need scripting.
+        (function () {
+            var root = document.documentElement;
+            root.setAttribute('data-js', 'on');
+            var theme = 'light';
+            try {
+                theme = localStorage.getItem('ccmusic-theme')
+                    || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+            } catch (e) { /* private mode: stay light */ }
+            root.setAttribute('data-theme', theme);
+        })();
+    </script>
 </head>
 <body>
+{{#page}}
+<div class="app">
 
-<div class="container mt-5">
+    <header class="topbar">
+        <div class="topbar-inner">
+            <a class="brand" href="/">
+                <span class="brand-mark">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                         stroke-width="2.75" stroke-linecap="round" aria-hidden="true">
+                        <circle cx="7" cy="18" r="3"></circle>
+                        <circle cx="18" cy="15" r="3"></circle>
+                        <path d="M10 18V5l11-2v12"></path>
+                    </svg>
+                </span>
+                <span class="brand-text">
+                    <span class="brand-name">CCMusic Search</span>
+                    <span class="brand-tagline">A search engine for Creative Commons music</span>
+                </span>
+            </a>
 
-    <div class="jumbotron jumbotron-fluid text-center">
-        <div class="container">
-            <h1 class="display-4">CCMusic search</h1>
-            <p class="lead">A search engine for Creative Commons music</p>
-            <form class="form-inline mt-4 d-flex justify-content-center" action="/" method="get">
-                <div class="form-group mx-sm-3 mb-2">
-                    <input type="text" class="form-control" id="q" name="q" placeholder="Search..." value="{{q}}">
-                </div>
-                <div class="form-group mx-sm-3 mb-2">
-                    <button type="submit" class="btn btn-primary mb-2"><i class="fas fa-search"></i> Search</button>
-                </div>
+            <form class="searchbar" action="/" method="get" role="search">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                     stroke-width="2.75" stroke-linecap="round" aria-hidden="true">
+                    <circle cx="11" cy="11" r="7"></circle>
+                    <path d="M20 20l-3.5-3.5"></path>
+                </svg>
+                <input class="searchbar-input" type="search" id="q" name="q" value="{{q}}"
+                       placeholder="Search Creative Commons music…" aria-label="Search Creative Commons music"
+                       autocomplete="off" autocapitalize="none" spellcheck="false">
+                <button class="btn btn-primary searchbar-submit" type="submit">Search</button>
             </form>
+
+            <button class="theme-toggle" type="button" id="theme-toggle" aria-label="Switch colour theme">
+                <svg class="icon-moon" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                     stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M20 14.5A8.5 8.5 0 019.5 4a8.5 8.5 0 1010.5 10.5z"></path>
+                </svg>
+                <svg class="icon-sun" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                     stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M12 4v1M12 19v1M4 12h1M19 12h1M6.3 6.3l.7.7M17 17l.7.7M17.7 6.3l-.7.7M7 17l-.7.7M12 8a4 4 0 100 8 4 4 0 000-8z"></path>
+                </svg>
+            </button>
         </div>
+
+        {{#hasResults}}
+        <div class="chiprow" id="chiprow">
+            <button class="chiprow-open" type="button" id="filters-open" aria-controls="filters" aria-expanded="false">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                     stroke-width="2.75" stroke-linecap="round" aria-hidden="true">
+                    <path d="M4 7h16M7 12h10M10 17h4"></path>
+                </svg>
+                Filters<span id="filters-count"></span>
+            </button>
+        </div>
+        {{/hasResults}}
+    </header>
+
+    {{#hasQuery}}
+    <div class="workspace">
+
+        <aside class="rail scroller" id="filters" data-open="false" aria-label="Filters">
+            <div class="rail-head">
+                <div class="rail-grabber"></div>
+                <div class="rail-headrow">
+                    <span class="rail-title">Filters</span>
+                    <button class="rail-reset" type="button" data-reset>Reset</button>
+                </div>
+            </div>
+
+            <div class="rail-scroll">
+                {{#hasResults}}
+                <div class="rail-filters">
+                    <div class="rail-group">
+                        <span class="rail-label" id="source-label">Source</span>
+                        <div role="group" aria-labelledby="source-label">
+                            {{#facets}}
+                            <button class="facet" type="button" aria-pressed="false"
+                                    data-facet="{{key}}" {{^enabled}}disabled{{/enabled}}>
+                                <span class="facet-box"></span>
+                                <span class="dot dot-{{key}}"></span>
+                                <span class="facet-name">{{label}}</span>
+                                <span class="facet-count">{{count}}</span>
+                            </button>
+                            {{/facets}}
+                        </div>
+                    </div>
+
+                    <div class="rail-divider"></div>
+
+                    <div class="rail-group">
+                        <span class="rail-label">Licence</span>
+                        <label class="switch">
+                            <input type="checkbox" id="commercial-only">
+                            <span class="switch-track"></span>
+                            Commercial use OK
+                        </label>
+                        <div class="licences" role="group" aria-label="Licence">
+                            {{#licences}}
+                            <button class="tag tag-outline licence-chip" type="button" aria-pressed="false"
+                                    data-licence="{{key}}">{{label}}</button>
+                            {{/licences}}
+                        </div>
+                    </div>
+
+                    {{#length.available}}
+                    <div class="rail-divider"></div>
+
+                    <div class="rail-group">
+                        <div class="rail-rangehead">
+                            <span class="rail-label">Length</span>
+                            <output class="tabular" id="length-value">{{length.valueLabel}}</output>
+                        </div>
+                        <div class="range" data-range="length">
+                            <span class="range-bound">{{length.floorLabel}}</span>
+                            <span class="range-track">
+                                <span class="range-fill"></span>
+                                <input class="range-input" type="range" data-handle="lo" aria-label="Shortest length"
+                                       min="{{length.floor}}" max="{{length.ceiling}}" step="15" value="{{length.floor}}">
+                                <input class="range-input" type="range" data-handle="hi" aria-label="Longest length"
+                                       min="{{length.floor}}" max="{{length.ceiling}}" step="15" value="{{length.ceiling}}">
+                            </span>
+                            <span class="range-bound range-bound-max">{{length.ceilingLabel}}</span>
+                        </div>
+                    </div>
+                    {{/length.available}}
+
+                    {{#tempo.available}}
+                    <div class="rail-divider"></div>
+
+                    <div class="rail-group">
+                        <div class="rail-rangehead">
+                            <span class="rail-label">Tempo</span>
+                            <output class="tabular" id="tempo-value">{{tempo.valueLabel}}</output>
+                        </div>
+                        <div class="range" data-range="tempo">
+                            <span class="range-bound">{{tempo.floorLabel}}</span>
+                            <span class="range-track">
+                                <span class="range-fill"></span>
+                                <input class="range-input" type="range" data-handle="lo" aria-label="Slowest tempo"
+                                       min="{{tempo.floor}}" max="{{tempo.ceiling}}" step="1" value="{{tempo.floor}}">
+                                <input class="range-input" type="range" data-handle="hi" aria-label="Fastest tempo"
+                                       min="{{tempo.floor}}" max="{{tempo.ceiling}}" step="1" value="{{tempo.ceiling}}">
+                            </span>
+                            <span class="range-bound range-bound-max">{{tempo.ceilingLabel}}</span>
+                        </div>
+                        <p class="rail-note">Only ccMixter and Icons8 report BPM — tracks without one are kept.</p>
+                    </div>
+                    {{/tempo.available}}
+
+                    <div class="rail-divider"></div>
+                </div>
+                {{/hasResults}}
+
+                {{>about}}
+            </div>
+
+            <div class="sheet-foot">
+                <button class="sheet-apply" type="button" data-close-sheet>Show
+                    <span data-visible-count>{{resultCount}}</span>
+                    <span data-result-noun>{{resultNoun}}</span></button>
+            </div>
+        </aside>
+
+        <main class="results scroller">
+            <div class="results-head">
+                <div class="results-summary">
+                    <p class="results-count" id="results-count" aria-live="polite">
+                        <strong data-visible-count>{{resultCount}}</strong>
+                        <span data-result-noun>{{resultNoun}}</span> for “{{q}}” ·
+                        <span data-visible-sources>{{sourceCount}}</span>
+                        <span data-source-noun>{{sourceNoun}}</span>
+                    </p>
+                    {{#hasResults}}
+                    <div class="sort" role="group" aria-label="Sort results">
+                        <button class="sort-opt" type="button" aria-pressed="true" data-sort="relevance">Relevance</button>
+                        <button class="sort-opt" type="button" aria-pressed="false" data-sort="newest">Newest</button>
+                    </div>
+                    {{/hasResults}}
+                </div>
+
+                {{#hasResults}}
+                <div class="results-columns" aria-hidden="true">
+                    <span></span>
+                    <span>Track</span>
+                    <span>Tags</span>
+                    <span>Source</span>
+                    <span>Licence</span>
+                    <span>BPM · Len</span>
+                    <span></span>
+                </div>
+                {{/hasResults}}
+            </div>
+
+            <ol class="rows" id="rows">
+                {{#results}}
+                <li class="row"
+                    data-position="{{position}}"
+                    data-service="{{serviceKey}}"
+                    data-licence="{{licenceKey}}"
+                    data-commercial="{{commercialUseAllowed}}"
+                    data-duration="{{duration}}"
+                    data-bpm="{{bpm}}"
+                    data-date="{{dateIso}}">
+
+                    <div class="row-disc">
+                        <div class="disc"><span class="disc-label {{discClass}}"></span></div>
+                    </div>
+
+                    <div class="row-track">
+                        <div class="row-title" title="{{title}}">{{title}}</div>
+                        <div class="row-byline">
+                            {{#hasAuthor}}
+                            <span class="row-author">{{author}}</span>
+                            <span aria-hidden="true">·</span>
+                            {{/hasAuthor}}
+                            <span class="row-date">{{dateLabel}}</span>
+                        </div>
+                    </div>
+
+                    <div class="row-tags">
+                        {{#tagList}}<span class="tag tag-neutral">{{.}}</span>{{/tagList}}
+                    </div>
+
+                    <div class="row-source">
+                        <span class="chip-service">
+                            <span class="dot dot-{{serviceKey}}"></span>{{serviceLabel}}<span
+                                class="pop-inline"> · {{popularityLabel}}</span>
+                        </span>
+                        <div class="row-pop{{^hasPopularity}} row-pop-none{{/hasPopularity}}">{{popularityLabel}}</div>
+                    </div>
+
+                    <!-- display:contents on the desktop grid; a real flex row in the mobile card -->
+                    <div class="row-foot">
+                        <div class="row-licence">
+                            <a class="chip-licence {{#commercialUseAllowed}}chip-licence-open{{/commercialUseAllowed}}{{^commercialUseAllowed}}chip-licence-restricted{{/commercialUseAllowed}}"
+                               href="{{licenceUrl}}" target="_blank" rel="license noopener"
+                               title="Read the {{licenceLabel}} licence">{{licenceLabel}}</a>
+                        </div>
+
+                        <div class="row-meta tabular">{{bpmLabel}} · {{durationLabel}}</div>
+
+                        <a class="row-listen" href="{{externalLink}}" target="_blank" rel="noopener">
+                            Listen
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                 stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <path d="M14 4h6v6"></path>
+                                <path d="M20 4l-9 9"></path>
+                                <path d="M18 14v5a1 1 0 01-1 1H5a1 1 0 01-1-1V7a1 1 0 011-1h5"></path>
+                            </svg>
+                        </a>
+                    </div>
+                </li>
+                {{/results}}
+            </ol>
+
+            {{#hasResults}}
+            <div class="load-more">
+                <button class="btn btn-secondary" type="button" id="load-more" hidden>Load more results</button>
+            </div>
+            <div class="notice" id="no-matches" hidden>
+                <h2>Nothing left after those filters</h2>
+                <p>Every result was filtered out. Widen the ranges or clear a source to bring them back.</p>
+                <p><button class="btn btn-secondary" type="button" data-reset>Reset filters</button></p>
+            </div>
+            {{/hasResults}}
+
+            {{^hasResults}}
+            <div class="notice">
+                <h2>No music found</h2>
+                <p>Nothing came back for “{{q}}”. Try a different word, an artist name, or a mood.</p>
+            </div>
+            {{/hasResults}}
+        </main>
     </div>
+    {{/hasQuery}}
 
-    <h2>Search results</h2>
-    <table id="dataTable" class="table table-striped table-bordered">
-        <thead>
-        <tr>
-            <th style="width: 200px">Title</th>
-            <th style="width: 150px">Author</th>
-            <th style="width: 50px">Duration</th>
-            <th style="width: 50px">BPM</th>
-            <th>Tags</th>
-            <th style="width: 70px">Date</th>
-            <th style="width: 70px">Link</th>
-            <th>License</th>
-            <th style="width: 70px">Service</th>
-        </tr>
-        </thead>
-        <tbody>
-        {{#songs}}
-            <tr>
-                <td>{{title}}</td>
-                <td>{{author}}</td>
-                <td style="text-align: center">{{duration}}</td>
-                <td style="text-align: center">{{bpm}}</td>
-                <td style="font-size: 14px; word-wrap: break-word">{{tags}}</td>
-                <td style="text-align: center">{{date}}</td>
-                <td style="text-align: center">
-                    <a href="{{externalLink}}" target="_blank" class="btn btn-secondary btn-sm">
-                        <i class="fas fa-external-link-alt"></i> Listen
-                    </a>
-                </td>
-                <td style="text-align: center">
-                    <a href="{{licenseUrl}}" target="_blank" ><img src="{{licenseLogoUrl}}"></a>
-                </td>
-                <td style="text-align: center">
-                    <img style="max-width: 70px; max-height: 50px" src="logos/{{service}}.png">
-                </td>
-            </tr>
-        {{/songs}}
-        </tbody>
-    </table>
-
-    <footer class="footer">
-        <div class="container">
-            <hr />
-            <div class="row">
-                <div class="col-md-12 text-muted">
-                    CCMusic Search is a simple search engine for
-                    <a href="http://creativecommons.org/about" target="_blank">Creative Commons</a> music.<br/>
-                    At the moment it uses public API to find music that has been released under CC on
-                    <a href="https://www.jamendo.com/" target="_blank">Jamendo</a>,
-                    <a href="http://ccmixter.org/" target="_blank">CCMixter</a>,
-                    <a href="https://icons8.com/music" target="_blank">Icons8</a>,
-                    <a href="https://archive.org/" target="_blank">Internet Archive</a> and
-                    <a href="https://freesound.org/" target="_blank">Freesound</a>.
-                    Code is open source and available on <a href="https://github.com/antodippo/ccmusicsearch-v2" target="_blank">GitHub</a>.<br/>
-                    <br/><br/>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-1">
-                    <a rel="license" target="_blank" href="http://creativecommons.org/licenses/by-nc-sa/4.0/">
-                        <img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png" />
-                    </a>
-                </div>
-                <div class="col-md-11 text-muted">
-                    Except where otherwise noted, content on this site is licensed under a
-                    <a rel="license" target="_blank" href="http://creativecommons.org/licenses/by-nc-sa/4.0/">
-                        Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License</a> -
-                    <a href="http://antodippo.com" target="_blank">Antonello D'Ippolito</a> - 2023
-                </div>
-            </div>
+    {{^hasQuery}}
+    <main class="welcome">
+        <div class="disc welcome-disc"><span class="disc-label disc-1"></span></div>
+        <h1>CCMusic Search</h1>
+        <p class="welcome-lead">A search engine for Creative Commons music. Search once, and get results from five
+            catalogues at the same time.</p>
+        <div class="welcome-sources">
+            {{#facets}}
+            <span class="chip-service"><span class="dot dot-{{key}}"></span>{{label}}</span>
+            {{/facets}}
         </div>
-    </footer>
+        {{>about}}
+    </main>
+    {{/hasQuery}}
 
 </div>
+{{/page}}
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
-<script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/js/all.min.js"></script>
+<script src="/js/search.js" defer></script>
 
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-C4SRXZE7P4"></script>
@@ -131,23 +330,6 @@
     gtag('js', new Date());
 
     gtag('config', 'G-C4SRXZE7P4');
-</script>
-
-<script>
-    $(document).ready(function() {
-        $('#dataTable').DataTable({
-            paging: true,
-            pageLength: 25,
-            // Empty on purpose: the server already ordered these by relevance, and any
-            // column sort here would throw that away.
-            order: []
-        });
-
-        // Search functionality
-        $('#searchInput').on('keyup', function() {
-            $('#dataTable').DataTable().search($(this).val()).draw();
-        });
-    });
 </script>
 
 </body>
