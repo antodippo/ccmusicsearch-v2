@@ -49,6 +49,51 @@ class SearchPageTest {
     }
 
     @Test
+    fun testItTitlesEachOfTheThreeThingsThePageCanBe() {
+        // The landing page is the only one search engines index, so it is the only one whose
+        // title has to carry what the site is rather than what was typed.
+        assertEquals(
+            "Free Creative Commons Music Search — CCMusic Search",
+            SearchPage.from(null, emptyList()).pageTitle
+        )
+        assertEquals(
+            "No Creative Commons music found for “jazz”",
+            SearchPage.from("jazz", emptyList()).pageTitle
+        )
+        assertEquals("“jazz” — free Creative Commons music", pageOf(result()).pageTitle)
+    }
+
+    @Test
+    fun testItDescribesWhatTheSearchActuallyFound() {
+        val page = SearchPage.from(
+            "jazz",
+            listOf(result(service = SearchService.JAMENDO), result(service = SearchService.CCMIXTER))
+        )
+
+        assertEquals(
+            "2 Creative Commons results for “jazz” across 2 sources. Filter by licence, length " +
+                "and BPM, and check what each track allows before you use it.",
+            page.metaDescription
+        )
+
+        // Singular reads as badly in a description as it does on the page itself.
+        assertTrue(pageOf(result()).metaDescription.startsWith("1 Creative Commons result for"))
+
+        assertTrue(SearchPage.from(null, emptyList()).metaDescription.startsWith("Search Jamendo,"))
+        assertTrue(SearchPage.from("jazz", emptyList()).metaDescription.startsWith("No Creative Commons music matched"))
+    }
+
+    @Test
+    fun testItPutsTheQueryIntoTheTitleWithoutInterpretingIt() {
+        // These land in a <title> and in a content="…" attribute. Mustache escapes on the way
+        // out, so what is stored is the raw query — the escaping is not this class's job, and
+        // double-escaping here would show up as &amp;quot; on the page.
+        val page = SearchPage.from("\"><script>", emptyList())
+
+        assertEquals("No Creative Commons music found for “\"><script>”", page.pageTitle)
+    }
+
+    @Test
     fun testItFormatsDurationsAsMinutesAndSeconds() {
         assertEquals("4:52", songOf(result(duration = 292)).durationLabel)
         assertEquals("0:07", songOf(result(duration = 7)).durationLabel)

@@ -19,6 +19,8 @@ data class SearchPage(
     val resultNoun: String,
     val sourceCount: Int,
     val sourceNoun: String,
+    val pageTitle: String,
+    val metaDescription: String,
     val results: List<SongView>,
     val facets: List<FacetView>,
     val licences: List<LicenceView>,
@@ -30,21 +32,61 @@ data class SearchPage(
         fun from(query: String?, results: List<SearchResult>): SearchPage {
             val songs = results.mapIndexed { index, result -> SongView.of(result, index) }
             val sourceCount = results.map { it.service }.distinct().size
+            val resultNoun = plural(songs.size, "result")
+            val sourceNoun = plural(sourceCount, "source")
 
             return SearchPage(
                 q = query.orEmpty(),
                 hasQuery = query != null,
                 hasResults = songs.isNotEmpty(),
                 resultCount = songs.size,
-                resultNoun = plural(songs.size, "result"),
+                resultNoun = resultNoun,
                 sourceCount = sourceCount,
-                sourceNoun = plural(sourceCount, "source"),
+                sourceNoun = sourceNoun,
+                pageTitle = pageTitle(query, songs.size),
+                metaDescription = metaDescription(query, songs.size, resultNoun, sourceCount, sourceNoun),
                 results = songs,
                 facets = facets(results),
                 licences = licences(results),
                 length = lengthRange(results),
                 tempo = tempoRange(results),
             )
+        }
+
+        /**
+         * The landing page leads with "Free … Music Search" because that is the phrase people
+         * type; "Creative Commons" qualifies it rather than leading. Calling any of this
+         * "royalty-free" would be untrue — half the catalogue is NC-licensed — and a title that
+         * oversells buys a click and loses the visitor.
+         *
+         * Search pages carry noindex, so their title is for the tab and for shared links.
+         */
+        private fun pageTitle(query: String?, resultCount: Int): String = when {
+            query == null -> "Free Creative Commons Music Search — CCMusic Search"
+            resultCount == 0 -> "No Creative Commons music found for “$query”"
+            else -> "“$query” — free Creative Commons music"
+        }
+
+        private fun metaDescription(
+            query: String?,
+            resultCount: Int,
+            resultNoun: String,
+            sourceCount: Int,
+            sourceNoun: String,
+        ): String = when {
+            query == null ->
+                "Search Jamendo, ccMixter, Icons8, Internet Archive and Freesound at once for " +
+                    "free, Creative Commons-licensed music for videos, podcasts and streams. " +
+                    "Filter by licence, length and BPM."
+
+            resultCount == 0 ->
+                "No Creative Commons music matched “$query”. Try a different word, an artist " +
+                    "name, or a mood."
+
+            else ->
+                "$resultCount Creative Commons $resultNoun for “$query” across $sourceCount " +
+                    "$sourceNoun. Filter by licence, length and BPM, and check what each track " +
+                    "allows before you use it."
         }
 
         /** Every service is listed whether or not it answered, so the rail keeps its shape. */
