@@ -11,6 +11,15 @@
     var root = document.documentElement;
     var PAGE_SIZE = 25;
 
+    /*
+     * Reporting goes out as an event rather than a call, so this file never has to know
+     * whether anything is listening. analytics.js is the only thing that does. The names
+     * below are the ones GA4 wants, which saves translating them on the way out.
+     */
+    function track(name, params) {
+        document.dispatchEvent(new CustomEvent('ccms:track', { detail: { name: name, params: params } }));
+    }
+
     /* ── theme ─────────────────────────────────────────────────────────────── */
 
     var themeToggle = document.getElementById('theme-toggle');
@@ -128,6 +137,7 @@
             toggleIn(sources, key);
             button.setAttribute('aria-pressed', sources.has(key) ? 'true' : 'false');
             refilter();
+            track('filter_apply', { filter_type: 'source', filter_value: key });
         });
     });
 
@@ -139,6 +149,7 @@
             toggleIn(licences, key);
             button.setAttribute('aria-pressed', licences.has(key) ? 'true' : 'false');
             refilter();
+            track('filter_apply', { filter_type: 'licence', filter_value: key });
         });
     });
 
@@ -147,6 +158,7 @@
         commercialInput.addEventListener('change', function () {
             commercialOnly = commercialInput.checked;
             refilter();
+            track('filter_apply', { filter_type: 'commercial', filter_value: String(commercialOnly) });
         });
     }
 
@@ -160,6 +172,7 @@
             });
             reorder();
             refilter();
+            track('sort_change', { sort_by: sort });
         });
     });
 
@@ -167,6 +180,7 @@
         loadMore.addEventListener('click', function () {
             shown += PAGE_SIZE;
             apply();
+            track('load_more', { results_shown: shown });
         });
     }
 
@@ -187,6 +201,7 @@
         if (tempoRange) tempoRange.reset();
 
         refilter();
+        track('filter_reset', {});
     }
 
     function setAll(selector, text) {
@@ -205,6 +220,15 @@
         } else {
             set.add(key);
         }
+    }
+
+    function debounce(fn, wait) {
+        var timer = null;
+
+        return function () {
+            clearTimeout(timer);
+            timer = setTimeout(fn, wait);
+        };
     }
 
     /* ── two-handle range ──────────────────────────────────────────────────── */
@@ -242,16 +266,24 @@
             if (output) output.textContent = format(api.lo, api.hi);
         }
 
+        // A drag fires 'input' the whole way across, so the filtering keeps up live while
+        // the reporting waits for the handle to settle on a value worth recording.
+        var report = debounce(function () {
+            track('filter_apply', { filter_type: name, filter_value: api.lo + '-' + api.hi });
+        }, 500);
+
         // The handles share a track, so each one stops at the other rather than crossing.
         lo.addEventListener('input', function () {
             if (Number(lo.value) > Number(hi.value)) lo.value = hi.value;
             sync();
             refilter();
+            report();
         });
         hi.addEventListener('input', function () {
             if (Number(hi.value) < Number(lo.value)) hi.value = lo.value;
             sync();
             refilter();
+            report();
         });
 
         sync();

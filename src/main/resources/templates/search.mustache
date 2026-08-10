@@ -27,7 +27,13 @@
 </head>
 <body>
 {{#page}}
-<div class="app">
+<!-- The attributes are what analytics.js reports; the browser decodes the entities Mustache
+     writes, which a value built into a script block would not. -->
+<div class="app"
+     data-query="{{q}}"
+     data-has-query="{{hasQuery}}"
+     data-result-count="{{resultCount}}"
+     data-source-count="{{sourceCount}}">
 
     <header class="topbar">
         <div class="topbar-inner">
@@ -320,17 +326,37 @@
 </div>
 {{/page}}
 
-<script src="/js/search.js" defer></script>
-
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-C4SRXZE7P4"></script>
+<!--
+  Google tag (gtag.js). Loaded only on the real site: the measurement ID is public, but a
+  local bootRun writing into the live property would skew the very numbers it reports.
+  Set ccms-analytics-debug in localStorage to switch it on anywhere for testing.
+-->
 <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
+    (function () {
+        var on = /(^|\.)ccmusicsearch\.com$/.test(location.hostname);
+        try {
+            on = on || !!localStorage.getItem('ccms-analytics-debug');
+        } catch (e) { /* private mode: no override, just the hostname test */ }
 
-    gtag('config', 'G-C4SRXZE7P4');
+        // analytics.js reads this, so it is set either way rather than left undefined on
+        // the branch that does not load the tag.
+        window.ccmsAnalytics = on;
+        if (!on) return;
+
+        var tag = document.createElement('script');
+        tag.async = true;
+        tag.src = 'https://www.googletagmanager.com/gtag/js?id=G-C4SRXZE7P4';
+        document.head.appendChild(tag);
+
+        window.dataLayer = window.dataLayer || [];
+        window.gtag = function () { dataLayer.push(arguments); };
+        gtag('js', new Date());
+        gtag('config', 'G-C4SRXZE7P4');
+    })();
 </script>
+
+<script src="/js/search.js" defer></script>
+<script src="/js/analytics.js" defer></script>
 
 </body>
 </html>
