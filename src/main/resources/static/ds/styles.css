@@ -1,5 +1,7 @@
 /* Organic — design-system tokens and component classes. This file is the source of truth for the system's look; retune it here and see readme.md. */
-@import url('https://fonts.googleapis.com/css2?family=Caprasimo:wght@400&family=Figtree:wght@400;600;700&display=swap');
+/* The webfonts are requested by a <link> in the document head, not @import-ed here: an
+   @import cannot start until this file has been fetched and parsed, which costs the fonts
+   an extra round trip on every first paint. */
 
 :root {
   --color-bg: #f5ead8;
@@ -71,6 +73,21 @@ body {
 h1, h2, h3, h4 { font-family: var(--font-heading); font-weight: var(--font-heading-weight); }
 
 .washed{filter:saturate(0.6) contrast(0.85) brightness(1.1) opacity(0.94)}
+
+/* Present to a screen reader, absent to the eye — for the heading a page owes its
+   structure but whose design already says the same thing visually. */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  border: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
 
 /* ══════════════════════════════════════════════════════════════════════════
    Components — built with the tokens above. Plain CSS

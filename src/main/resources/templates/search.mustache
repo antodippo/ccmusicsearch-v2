@@ -3,13 +3,68 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CCMusic search</title>
-    <meta name="description" content="A search engine for Creative Commons music.">
+
+    {{#page}}
+    <title>{{pageTitle}}</title>
+    <meta name="description" content="{{metaDescription}}">
+
+    <!--
+      A search page is an internal result listing: useful to the visitor who ran it, thin and
+      duplicative in an index. It is kept out with noindex rather than a robots.txt Disallow,
+      because a disallowed URL is never fetched and the tag below would never be read.
+
+      Only the landing page declares a canonical. It is what folds www and the raw Cloud Run
+      hostname back into one URL. Pointing a noindex page at a different canonical would be two
+      instructions that contradict each other, so the search pages declare none.
+    -->
+    {{#hasQuery}}
+    <meta name="robots" content="noindex, follow">
+    {{/hasQuery}}
+    {{^hasQuery}}
+    <link rel="canonical" href="https://ccmusicsearch.com/">
+    {{/hasQuery}}
+
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="CCMusic Search">
+    <meta property="og:title" content="{{pageTitle}}">
+    <meta property="og:description" content="{{metaDescription}}">
+    <!-- Declared only where it is the canonical URL. On a search page it would point the
+         share card away from the search that was actually shared. -->
+    {{^hasQuery}}
+    <meta property="og:url" content="https://ccmusicsearch.com/">
+    {{/hasQuery}}
+    <meta name="twitter:card" content="summary">
+    {{/page}}
+
     <link rel="icon" type="image/x-icon" href="/favicon.ico">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <!-- Requested here rather than @import-ed from styles.css: an @import is only discovered
+         once that stylesheet has been fetched and parsed, which puts the fonts a whole round
+         trip further back and leaves the preconnects above with nothing to warm up. -->
+    <link rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Caprasimo:wght@400&family=Figtree:wght@400;600;700&display=swap">
     <link rel="stylesheet" href="/ds/styles.css">
     <link rel="stylesheet" href="/css/search.css">
+
+    <script type="application/ld+json">
+        {
+            "@context": "https://schema.org",
+            "@type": "WebSite",
+            "name": "CCMusic Search",
+            "url": "https://ccmusicsearch.com/",
+            "description": "A search engine for Creative Commons music, covering Jamendo, ccMixter, Icons8, Internet Archive and Freesound.",
+            "inLanguage": "en",
+            "potentialAction": {
+                "@type": "SearchAction",
+                "target": {
+                    "@type": "EntryPoint",
+                    "urlTemplate": "https://ccmusicsearch.com/?q={search_term_string}"
+                },
+                "query-input": "required name=search_term_string"
+            }
+        }
+    </script>
     <script>
         // Runs before first paint: a dark-theme reload must not flash the light ground.
         // Setting data-js here is also what reveals the controls that need scripting.
@@ -196,6 +251,11 @@
         </aside>
 
         <main class="results scroller">
+            <!-- The count line below reads as the heading and is the live region, so it cannot
+                 also be the h1. This gives the page the one heading it owes assistive tech
+                 without a second visible title above the results. -->
+            <h1 class="visually-hidden">Creative Commons music matching “{{q}}”</h1>
+
             <div class="results-head">
                 <div class="results-summary">
                     <p class="results-count" id="results-count" aria-live="polite">
@@ -311,9 +371,9 @@
     {{^hasQuery}}
     <main class="welcome">
         <div class="disc welcome-disc"><span class="disc-label disc-1"></span></div>
-        <h1>CCMusic Search</h1>
-        <p class="welcome-lead">A search engine for Creative Commons music. Search once, and get results from five
-            catalogues at the same time.</p>
+        <h1>Search free Creative Commons music</h1>
+        <p class="welcome-lead">Search once, and get results from five catalogues at the same time — music you can
+            use in videos, podcasts and streams, with every track's licence shown up front.</p>
         <div class="welcome-sources">
             {{#facets}}
             <span class="chip-service"><span class="dot dot-{{key}}"></span>{{label}}</span>

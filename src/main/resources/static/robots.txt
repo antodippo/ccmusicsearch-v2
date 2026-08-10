@@ -1,0 +1,8 @@
+# Search pages (/?q=…) are deliberately not disallowed here. They carry a noindex meta tag,
+# and a crawler that is told not to fetch a URL never reads the tag telling it not to index —
+# so a Disallow would be the one thing that keeps them in the index.
+
+User-agent: *
+Allow: /
+
+Sitemap: https://ccmusicsearch.com/sitemap.xml
