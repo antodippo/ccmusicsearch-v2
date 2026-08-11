@@ -1,11 +1,11 @@
 package com.antodippo.ccmusicsearch
 
 import com.antodippo.ccmusicsearch.apiservices.APIService
+import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
-import mu.KotlinLogging
 import org.springframework.stereotype.Service
 
 
