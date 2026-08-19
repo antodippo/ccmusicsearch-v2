@@ -25,8 +25,14 @@ object RelevanceRanker {
     private const val POPULARITY_WEIGHT = 0.5
 
     // Freesound is a sample library. Even filtered to a minimum duration it contributes
-    // loops and one-shots, so it gets to compete for fewer of the top slots.
-    private val serviceWeights = mapOf(SearchService.FREESOUND to 0.5)
+    // loops and one-shots, so it gets to compete for fewer of the top slots. Europeana is
+    // filtered to sound rather than to music, so oral history, radio and field recordings
+    // come through the same query as the songs; it is held back on the same grounds until
+    // its relevance for music is measured rather than assumed.
+    private val serviceWeights = mapOf(
+        SearchService.FREESOUND to 0.5,
+        SearchService.EUROPEANA to 0.5,
+    )
 
     fun rank(resultsByService: List<Collection<SearchResult>>): List<SearchResult> =
         resultsByService

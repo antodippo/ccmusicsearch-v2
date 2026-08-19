@@ -111,8 +111,14 @@ without new mapping code.
 
 **The risk, stated plainly:** `TYPE:SOUND` is not `TYPE:MUSIC`. Heritage sound archives carry
 oral history, radio broadcast and field recordings alongside music, which is exactly how the
-Wikimedia catalogue failed below. It therefore ships at weight 0.5, and its relevance for
-music is the first thing to check against a real key.
+Wikimedia catalogue failed below. It therefore ships at weight 0.5 — the same handicap
+Freesound carries — and its relevance for music is the first thing to check against a real
+key. Its 100 rows take the whole-page ceiling from 525 to 625.
+
+Because the search response carries no duration, Europeana rows report no length, exactly as
+Internet Archive rows already do; the length filter skips results reporting zero, so they are
+never hidden by it. Dates come from the archives' own `year` where there is one, so a 1924
+recording reads as 1924 — harmless now that ranking no longer sorts on dates.
 
 ### Strongest runner-up: Library of Congress
 
