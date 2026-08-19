@@ -329,6 +329,9 @@ html:not([data-js]) .load-more { display: none; }
   height: 8px;
   flex: none;
   border-radius: 999px;
+  /* A service with no colour of its own gets a grey one rather than an invisible
+     8px hole. Adding a source and forgetting the rule below is otherwise silent. */
+  background: color-mix(in srgb, var(--color-text) 32%, transparent);
 }
 .dot-jamendo { background: #c67139; }
 .dot-ccmixter { background: #7a8a5e; }
@@ -564,7 +567,11 @@ html:not([data-js]) .load-more { display: none; }
 .results-columns,
 .row {
   display: grid;
-  grid-template-columns: 54px minmax(210px, 1fr) 128px 126px 106px 70px 112px;
+  /* Source fits "Library of Congress" and licence fits "Public domain", the longest
+     label each column can be handed. The track column pays for both out of its
+     minimum: it is the one that truncates gracefully, and at these widths the row
+     as a whole still fits the same viewports it did before. */
+  grid-template-columns: 54px minmax(164px, 1fr) 128px 156px 122px 70px 112px;
   gap: 14px;
   align-items: center;
 }
@@ -691,6 +698,13 @@ html:not([data-js]) .load-more { display: none; }
   white-space: nowrap;
   overflow: hidden;
 }
+/* The name needs its own box to ellipsise in: text-overflow does nothing on the flex
+   container above, so an over-long label was being cut mid-word instead. */
+.chip-service-name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 .row-pop {
   font-size: 11.5px;
   margin-top: 5px;
@@ -711,6 +725,7 @@ html:not([data-js]) .load-more { display: none; }
   font-weight: 600;
   white-space: nowrap;
   overflow: hidden;
+  text-overflow: ellipsis;
   text-overflow: ellipsis;
   text-decoration: none;
 }
