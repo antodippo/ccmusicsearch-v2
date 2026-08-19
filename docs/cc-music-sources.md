@@ -145,9 +145,33 @@ One thing to know before pasting a response anywhere: Europeana echoes the calle
 back inside `guid` (as `utm_campaign`) and inside `link`. Both are dropped from the fixture
 for that reason, and `externalLink` is built from `id` instead.
 
-**The relevance question is still open.** All three sampled records are genuinely music —
-Romanian Radio chamber and jazz recordings — but three records from one provider on one query
-is not an answer. Run `guitar` as well as `jazz` and count.
+#### The relevance check: it fails
+
+`q=jazz` looked fine — Romanian Radio chamber and jazz recordings, all genuinely music. `q=guitar`
+is the query that tells the truth, and it returned **7 music in the top 20**:
+
+| | count |
+|---|---|
+| Music | 7 |
+| "Sounds of Changes" — foley of guitar *making*: wood chisel, planing, sandpaper, honing the planer | 11 |
+| Romanian Radio poetry readings — "Ghitara" and "Chitara" are poem titles | 2 |
+
+More than half of one page is a single provider's recordings of a luthier's workshop. This is
+the Wikimedia failure repeated: `TYPE:SOUND` matched the *word* guitar, not the instrument
+being played. Weighting the service down does not fix it, because the noise arrives inside the
+same 100 rows as the signal.
+
+The second number is as telling as the first: **`totalResults` was 141** for a mainstream
+instrument, across the whole of Europeana's openly-licensed sound. Even a perfect filter leaves
+roughly fifty usable recordings for "guitar" — against a service integration, an API key and
+ongoing maintenance.
+
+There is one principled filter visible in the data rather than guessed at. Every non-music
+result had an empty `dcTypeLangAware.en`, while six of the seven music results carried one
+("Sound Document", "Musical sound recording", "Jazz Music"), and two of them sat under
+Europeana's own `soundgenres/Music/…` concept branch. Requiring that would keep most of the
+music and drop nearly all of the workshop. Whether it leaves enough behind to be worth having
+is the question that decides this source.
 
 ### Added: Library of Congress
 
