@@ -74,7 +74,7 @@ class Europeana(private val apiClient: APIClient) : APIService {
                 // already skips results reporting zero, as it does for Internet Archive.
                 duration = 0,
                 bpm = 0,
-                tags = tags(item["dcSubject"]),
+                tags = tags(subjects(item)),
                 date = date,
                 // Built from the id rather than the guid Europeana also sends: that one
                 // carries API tracking parameters we have no business putting in a link.
@@ -108,23 +108,56 @@ class Europeana(private val apiClient: APIClient) : APIService {
     }
 
     /**
-     * `year` is what these archives actually record, and for a heritage recording the year
-     * is the useful thing to show. It is only ever a year, so the first of January stands
-     * in for the rest of it. Ranking no longer sorts on dates, so a 1924 recording is not
-     * buried for being old — it just reads as 1924.
+     * When the thing was recorded, which is what a listener means by its date.
      *
-     * Items without a parseable year fall back to when Europeana ingested them, which is
-     * always present and is at least true, if less interesting.
+     * Europeana files that under edmTimespan, and the language-aware labels tag it "zxx" —
+     * the ISO code for "no linguistic content" — because a date is not a word. `year` is
+     * documented but plenty of providers never send it, and timestamp_created is when
+     * Europeana ingested the record: a concert given in 2011 was catalogued in 2023, so
+     * reading that would put the wrong decade on every row.
+     *
+     * It stays a last resort rather than a reason to drop the item, since a date we have is
+     * better than a row we cannot show at all.
      */
     private fun releaseDate(item: JsonNode): LocalDate? {
-        firstOf(item, "year")
-            ?.toIntOrNull()
-            ?.takeIf { it in 1..9999 }
-            ?.let { return LocalDate.of(it, 1, 1) }
+        recordedOn(item).forEach { candidate ->
+            toLocalDate(candidate)?.let { return it }
+        }
 
-        return firstOf(item, "timestamp_created")
-            ?.substringBefore("T")
-            ?.let { runCatching { LocalDate.parse(it) }.getOrNull() }
+        return firstOf(item, "timestamp_created")?.let { toLocalDate(it) }
+    }
+
+    /** Every string that might be the recording date, best first. */
+    private fun recordedOn(item: JsonNode): List<String> {
+        val labelled = item["edmTimespanLabelLangAware"]?.get("zxx")?.map { it.asText() }.orEmpty()
+        // edmTimespan mixes the date in with century URIs. The literal one carries a leading
+        // '#'; the others simply fail to parse, so both are offered up and sorted out below.
+        val raw = item["edmTimespan"]?.map { it.asText().removePrefix("#") }.orEmpty()
+
+        return labelled + raw + listOfNotNull(firstOf(item, "year"))
+    }
+
+    private fun toLocalDate(raw: String): LocalDate? {
+        raw.toIntOrNull()?.takeIf { it in 1..9999 }?.let { return LocalDate.of(it, 1, 1) }
+
+        return runCatching { LocalDate.parse(raw.substringBefore("T")) }.getOrNull()
+    }
+
+    /**
+     * Subjects arrive as dcSubjectLangAware, an object keyed by language, and only rarely as
+     * a plain dcSubject. English is preferred because the rest of the page is in it; "def"
+     * is skipped whatever happens, because that key holds Getty and Europeana URIs rather
+     * than words, and a row of vocabulary links makes for useless tags.
+     */
+    private fun subjects(item: JsonNode): JsonNode? {
+        item["dcSubject"]?.let { return it }
+
+        val byLanguage = item["dcSubjectLangAware"] ?: return null
+        byLanguage["en"]?.let { return it }
+
+        return byLanguage.properties()
+            .firstOrNull { (language, _) -> language != "def" }
+            ?.value
     }
 
     private fun tags(subject: JsonNode?): String = when {

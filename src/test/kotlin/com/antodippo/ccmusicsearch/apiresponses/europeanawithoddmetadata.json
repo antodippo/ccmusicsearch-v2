@@ -1,0 +1,40 @@
+{
+  "items": [
+    {
+      "id": "/111/documented",
+      "type": "SOUND",
+      "title": ["Documented field names"],
+      "dcCreator": ["Anabela Marica"],
+      "dataProvider": ["Ignored When dcCreator Exists"],
+      "dcSubject": ["piano", "recital"],
+      "year": ["1932"],
+      "edmRights": ["http://creativecommons.org/publicdomain/zero/1.0/"],
+      "timestamp_created": "2020-01-01T00:00:00.000Z"
+    },
+    {
+      "id": "/222/nonenglish",
+      "type": "SOUND",
+      "title": ["No subjects in English"],
+      "dcSubjectLangAware": {
+        "def": ["http://vocab.getty.edu/aat/300054146", "http://data.europeana.eu/concept/62"],
+        "ro": ["muzică de cameră", "pian"]
+      },
+      "edmTimespan": ["http://data.europeana.eu/timespan/20", "#1998-07-14"],
+      "timestamp_created": "2019-05-05T10:00:00.000Z"
+    },
+    {
+      "id": "/333/ingestonly",
+      "type": "SOUND",
+      "title": ["Nothing but an ingest date"],
+      "dataProvider": ["A Provider"],
+      "rights": ["http://creativecommons.org/licenses/by/4.0/"],
+      "timestamp_created": "2021-09-30T08:15:00.000Z"
+    },
+    {
+      "type": "SOUND",
+      "title": ["No id, nothing to link to"],
+      "rights": ["http://creativecommons.org/licenses/by/4.0/"],
+      "timestamp_created": "2022-02-02T00:00:00.000Z"
+    }
+  ]
+}

@@ -1,36 +1,309 @@
 {
-  "apikey": "testkey",
-  "success": true,
-  "requestNumber": 1,
-  "itemsCount": 3,
-  "totalResults": 4127,
   "items": [
     {
-      "id": "/2059209/data_sounds_R_10_1234",
+      "completeness": 0,
+      "country": [
+        "Romania"
+      ],
+      "dataProvider": [
+        "Romanian Radio Broadcasting Company"
+      ],
+      "dcDescription": [
+        "Lucrare muzicală camerală semnată de Nikolai Kapustin, interpretată la pian de Anabela Marica. Înregistrare pe suport DVD din Arhiva Radio România (DVD-FM-403); realizată la Ateneul Român, în data de 08.03.2011; regizor muzical: Andrei Cazan"
+      ],
+      "dcSubjectLangAware": {
+        "def": [
+          "http://vocab.getty.edu/aat/300387763",
+          "http://vocab.getty.edu/aat/300404514",
+          "http://vocab.getty.edu/aat/300054146",
+          "http://data.europeana.eu/concept/1618",
+          "http://data.europeana.eu/concept/62",
+          "http://data.europeana.eu/timespan/20"
+        ],
+        "en": [
+          "Archaeus Ensemble",
+          "20th century",
+          "chamber music",
+          "The twentieth century"
+        ],
+        "ro": [
+          "Andrei Cazan",
+          "Ansamblul Archaeus",
+          "Ateneul Român",
+          "înregistrare live Radio România",
+          "secolul XX",
+          "Nikolai Kapustin",
+          "muzică de cameră",
+          "Anabela Marica",
+          "Secolul XX"
+        ]
+      },
+      "dcTitleLangAware": {
+        "ro": [
+          "Jazz etude \"Pastorale\""
+        ]
+      },
+      "dcTypeLangAware": {
+        "def": [
+          "http://vocab.getty.edu/aat/300387763",
+          "http://data.europeana.eu/concept/1618"
+        ],
+        "en": [
+          "Chamber music"
+        ],
+        "ro": [
+          "program de radio",
+          "Muzică de cameră"
+        ]
+      },
+      "edmIsShownAt": [
+        "https://culturalia.ro/entities/9e8523a4-e91b-49b9-b44d-953475239cd4/view"
+      ],
+      "edmIsShownBy": [
+        "https://resource.culturalia.ro/public/2000/01/01/_Z:/B-SRR/2020/Noiembrie/Andra/DVD_FM-403_0201.mp3"
+      ],
+      "edmPreview": [
+        "https://api.europeana.eu/thumbnail/v2/url.json?uri=https%3A%2F%2Fresource.culturalia.ro%2Fpublic%2F2000%2F01%2F01%2F_Z%3A%2FB-SRR%2F2020%2FNoiembrie%2FAndra%2FDVD_FM-403_0201.mp3&type=SOUND"
+      ],
+      "edmTimespan": [
+        "#2011-03-08",
+        "http://data.europeana.eu/timespan/21",
+        "http://data.europeana.eu/timespan/20"
+      ],
+      "edmTimespanLabelLangAware": {
+        "en": [
+          "21st century",
+          "20th century"
+        ],
+        "zxx": [
+          "2011-03-08"
+        ]
+      },
+      "europeanaCollectionName": [
+        "937_Societatea_Romana_de_Radiodifuziune"
+      ],
+      "id": "/937/Culturalia_9e8523a4_e91b_49b9_b44d_953475239cd4",
+      "index": 0,
+      "language": [
+        "ro"
+      ],
+      "provider": [
+        "National Heritage Institute, Bucharest"
+      ],
+      "rights": [
+        "http://creativecommons.org/licenses/by-sa/4.0/"
+      ],
+      "score": 66.85193,
+      "timestamp_created": "2023-04-12T12:58:54.646Z",
+      "title": [
+        "Jazz etude \"Pastorale\""
+      ],
       "type": "SOUND",
-      "title": ["Rhapsody in Blue"],
-      "dcCreator": ["George Gershwin"],
-      "dcSubject": ["jazz", "orchestral", "piano"],
-      "edmRights": ["http://creativecommons.org/licenses/by-sa/4.0/"],
-      "year": ["1924"],
-      "dataProvider": ["Nederlands Instituut voor Beeld en Geluid"],
-      "guid": "https://www.europeana.eu/item/2059209/data_sounds_R_10_1234?utm_source=api&utm_medium=api",
-      "timestamp_created": "2015-03-04T12:00:00.000Z"
+      "ugc": [
+        false
+      ]
     },
     {
-      "id": "/9200518/field_recording_88",
+      "completeness": 0,
+      "country": [
+        "Romania"
+      ],
+      "dataProvider": [
+        "Romanian Radio Broadcasting Company"
+      ],
+      "dcDescription": [
+        "Lucrare camerală de Wil Offermans, interpretează Ion Bogdan Ștefănescu la flaut alto solo. Înregistrare pe suport DVD din Arhiva Radio România (DVD-FM-243); 27.02.2010, live, Palatul Mogoșoaia"
+      ],
+      "dcSubjectLangAware": {
+        "def": [
+          "http://data.europeana.eu/concept/1618",
+          "http://data.europeana.eu/concept/1876",
+          "http://data.europeana.eu/concept/62",
+          "http://vocab.getty.edu/aat/300387763",
+          "http://www.wikidata.org/entity/Q3488631",
+          "http://vocab.getty.edu/aat/300005734",
+          "http://vocab.getty.edu/aat/300054146"
+        ],
+        "en": [
+          "Radio Recording",
+          "Mogov Palace",
+          "chamber music",
+          "Ion Bogdan Stefannescu"
+        ],
+        "ro": [
+          "înregistrare Radio",
+          "Wil Offermans",
+          "Radio România",
+          "Palatul Mogoșoaia",
+          "muzică de cameră",
+          "Ion Bogdan Ștefănescu",
+          "pian",
+          "flaut alto"
+        ]
+      },
+      "dcTitleLangAware": {
+        "ro": [
+          "Temă de jazz"
+        ]
+      },
+      "dcTypeLangAware": {
+        "def": [
+          "http://data.europeana.eu/concept/1618",
+          "http://vocab.getty.edu/aat/300387763"
+        ],
+        "en": [
+          "Chamber music"
+        ],
+        "ro": [
+          "program de radio",
+          "Muzică de cameră"
+        ]
+      },
+      "edmIsShownAt": [
+        "https://culturalia.ro/entities/3707cbcb-5163-4c66-b830-522649b559b8/view"
+      ],
+      "edmIsShownBy": [
+        "https://resource.culturalia.ro/public/2000/01/01/_Z:/B-SRR/2020/Decembrie/Marta/DVD_FM-243_1001.mp3"
+      ],
+      "edmPreview": [
+        "https://api.europeana.eu/thumbnail/v2/url.json?uri=https%3A%2F%2Fresource.culturalia.ro%2Fpublic%2F2000%2F01%2F01%2F_Z%3A%2FB-SRR%2F2020%2FDecembrie%2FMarta%2FDVD_FM-243_1001.mp3&type=SOUND"
+      ],
+      "edmTimespan": [
+        "#2010-02-27",
+        "http://data.europeana.eu/timespan/21"
+      ],
+      "edmTimespanLabelLangAware": {
+        "en": [
+          "21st century"
+        ],
+        "zxx": [
+          "2010-02-27"
+        ]
+      },
+      "europeanaCollectionName": [
+        "937_Societatea_Romana_de_Radiodifuziune"
+      ],
+      "id": "/937/Culturalia_3707cbcb_5163_4c66_b830_522649b559b8",
+      "index": 0,
+      "language": [
+        "ro"
+      ],
+      "provider": [
+        "National Heritage Institute, Bucharest"
+      ],
+      "rights": [
+        "http://creativecommons.org/licenses/by-sa/4.0/"
+      ],
+      "score": 66.827736,
+      "timestamp_created": "2023-04-12T12:58:54.646Z",
+      "title": [
+        "Temă de jazz"
+      ],
       "type": "SOUND",
-      "title": ["Folk song from Lapland"],
-      "dcSubject": "field recording",
-      "edmRights": ["http://creativecommons.org/publicdomain/zero/1.0/"],
-      "dataProvider": ["Suomen kansallisarkisto"],
-      "timestamp_created": "2018-11-20T09:15:00.000Z"
+      "ugc": [
+        false
+      ]
     },
     {
-      "id": "/764/item_no_date_at_all",
+      "completeness": 0,
+      "country": [
+        "Romania"
+      ],
+      "dataProvider": [
+        "Romanian Radio Broadcasting Company"
+      ],
+      "dcDescription": [
+        "Compound musical work, performed by the band Blue Noise. DVD recording from Romanian Radio Archive (DVD-FM-1128); made in Romanian Radio T4 studio on 02.10.2015; sound engineer: Andrei Barbu; music director: Gabriela Dina;"
+      ],
+      "dcSubjectLangAware": {
+        "def": [
+          "http://data.europeana.eu/concept/62",
+          "http://data.europeana.eu/timespan/20",
+          "http://www.wikidata.org/entity/Q3488631",
+          "http://vocab.getty.edu/aat/300404514",
+          "http://vocab.getty.edu/aat/300054146",
+          "http://vocab.getty.edu/aat/300387763"
+        ],
+        "en": [
+          "20th century",
+          "The twentieth century"
+        ],
+        "ro": [
+          "Anders Edenroth",
+          "Radio România",
+          "secolul XX",
+          "Andrei Barbu",
+          "Gabriela Dinu",
+          "muzică de jazz",
+          "înregistrare live Radio România",
+          "Studio T4",
+          "Blue Noise",
+          "Secolul XX"
+        ]
+      },
+      "dcTitleLangAware": {
+        "ro": [
+          "Pass me the Jazz"
+        ]
+      },
+      "dcTypeLangAware": {
+        "def": [
+          "http://vocab.getty.edu/aat/300387763"
+        ],
+        "en": [
+          "Jazz Music"
+        ],
+        "ro": [
+          "program de radio",
+          "Muzică de jazz"
+        ]
+      },
+      "edmIsShownAt": [
+        "https://culturalia.ro/entities/a71f9985-41cf-4d86-84fd-393a76fd237a/view"
+      ],
+      "edmIsShownBy": [
+        "https://resource.culturalia.ro/public/2000/01/01/_Z:/B-SRR/2020/Octombrie/Andra/DVD_FM-1128_1201.mp3"
+      ],
+      "edmPreview": [
+        "https://api.europeana.eu/thumbnail/v2/url.json?uri=https%3A%2F%2Fresource.culturalia.ro%2Fpublic%2F2000%2F01%2F01%2F_Z%3A%2FB-SRR%2F2020%2FOctombrie%2FAndra%2FDVD_FM-1128_1201.mp3&type=SOUND"
+      ],
+      "edmTimespan": [
+        "#2015-10-02",
+        "http://data.europeana.eu/timespan/21",
+        "http://data.europeana.eu/timespan/20"
+      ],
+      "edmTimespanLabelLangAware": {
+        "en": [
+          "21st century",
+          "20th century"
+        ],
+        "zxx": [
+          "2015-10-02"
+        ]
+      },
+      "europeanaCollectionName": [
+        "937_Societatea_Romana_de_Radiodifuziune"
+      ],
+      "id": "/937/Culturalia_a71f9985_41cf_4d86_84fd_393a76fd237a",
+      "index": 0,
+      "language": [
+        "ro"
+      ],
+      "provider": [
+        "National Heritage Institute, Bucharest"
+      ],
+      "rights": [
+        "http://creativecommons.org/licenses/by-sa/4.0/"
+      ],
+      "score": 64.7374,
+      "timestamp_created": "2023-04-12T12:58:54.646Z",
+      "title": [
+        "Pass me the Jazz"
+      ],
       "type": "SOUND",
-      "title": ["Untitled wax cylinder"],
-      "edmRights": ["http://creativecommons.org/publicdomain/mark/1.0/"]
+      "ugc": [
+        false
+      ]
     }
   ]
 }

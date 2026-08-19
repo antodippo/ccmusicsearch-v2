@@ -22,7 +22,7 @@ data class SearchResult(
 )
 
 enum class SearchService {
-    JAMENDO, CCMIXTER, INTERNETARCHIVE, FREESOUND, EUROPEANA;
+    JAMENDO, CCMIXTER, INTERNETARCHIVE, FREESOUND, LIBRARYOFCONGRESS, EUROPEANA;
 
     fun toService(): APIService {
         return when (this) {
@@ -30,6 +30,7 @@ enum class SearchService {
             CCMIXTER -> CCMixter(ApiClientViaHttp())
             INTERNETARCHIVE -> InternetArchive(ApiClientViaHttp())
             FREESOUND -> Freesound(ApiClientViaHttp())
+            LIBRARYOFCONGRESS -> LibraryOfCongress(ApiClientViaHttp())
             EUROPEANA -> Europeana(ApiClientViaHttp())
         }
     }
