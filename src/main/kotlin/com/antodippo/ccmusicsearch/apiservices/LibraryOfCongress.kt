@@ -9,10 +9,17 @@ import org.springframework.stereotype.Service
 import java.net.URI
 import java.net.URLEncoder
 import java.net.http.HttpResponse
+import java.time.Clock
 import java.time.LocalDate
 
 @Service
-class LibraryOfCongress(private val apiClient: APIClient) : APIService {
+class LibraryOfCongress(
+    private val apiClient: APIClient,
+    // Injected so the public domain cut-off below can be pinned in tests. It moves every
+    // January, and a test that agreed with it only until next new year would be worse than
+    // no test at all.
+    private val clock: Clock = Clock.systemUTC(),
+) : APIService {
 
     private val logger = KotlinLogging.logger {}
 
@@ -22,12 +29,11 @@ class LibraryOfCongress(private val apiClient: APIClient) : APIService {
         val response: HttpResponse<String>
         val items: JsonNode?
         try {
-            // Scoped to the National Jukebox rather than to loc.gov/audio at large, and that
-            // scoping is what makes the hard-coded licence below honest: the Jukebox is
-            // recordings from 1900-1925, and everything published before 1923 entered the
-            // public domain under the Music Modernization Act. The wider audio endpoint mixes
-            // in material that is still in copyright, which we would have no way to tell apart
-            // — loc.gov states rights as free prose, not as a licence URL.
+            // Scoped to the National Jukebox rather than to loc.gov/audio at large. The wider
+            // audio endpoint mixes in material of every vintage and states its rights as free
+            // prose rather than as a licence URL, so there would be nothing to read a licence
+            // from; the Jukebox is a single dated collection, which is what lets license()
+            // below decide per record.
             //
             // at=results trims the response to the array we read. No API key: the Library
             // rate-limits instead of authenticating.
@@ -79,10 +85,7 @@ class LibraryOfCongress(private val apiClient: APIClient) : APIService {
                 tags = tags(item["subject"]),
                 date = date,
                 externalLink = URI.create(link),
-                // Every recording in this collection is public domain, so unlike Icons8's old
-                // blanket UNKNOWN this states something true rather than papering over a gap.
-                // It holds only because the query above is pinned to the Jukebox.
-                license = CCLicense.PUBLIC_DOMAIN,
+                license = license(date),
                 service = SearchService.LIBRARYOFCONGRESS
             )
         } catch (e: Exception) {
@@ -116,9 +119,13 @@ class LibraryOfCongress(private val apiClient: APIClient) : APIService {
     }
 
     /**
-     * `date` is usually the bare year these recordings are catalogued under, which is the
-     * useful thing to show for a 1917 record — ranking no longer sorts on dates, so an old
-     * one is not buried for being old. `dates` carries a full timestamp where there is one.
+     * `date` is normally the full recording date (`1923-11-07`), but some records carry only
+     * the year they are catalogued under, so both are read. `dates` repeats it and stands in
+     * where `date` is missing.
+     *
+     * Showing a 1919 date is the point rather than a problem: ranking stopped sorting on
+     * dates, so a collection where every record is a century old is not buried for it. The
+     * date is also what decides the licence — see license().
      */
     private fun recordedOn(item: JsonNode): LocalDate? {
         firstOf(item, "date")?.let { raw ->
@@ -138,6 +145,24 @@ class LibraryOfCongress(private val apiClient: APIClient) : APIService {
     private fun displayName(name: String): String =
         name.split(' ').joinToString(" ") { word ->
             word.replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() }
+        }
+
+    /**
+     * The Jukebox credits "Sony Music Entertainment or EMI Music" on every record it holds,
+     * wording that predates the Music Modernization Act — under which a US recording enters
+     * the public domain on the first of January 101 years after it was published. So the
+     * recording date decides this, not the catalogue note.
+     *
+     * Past the line we say nothing rather than guess: PUBLIC_DOMAIN would make
+     * allowsCommercialUse() true and tell someone they may sell a record that is still
+     * somebody's. That is the mistake Icons8 was removed for, and a blanket claim across
+     * this collection would have repeated it.
+     */
+    private fun license(recordedOn: LocalDate): CCLicense =
+        if (recordedOn.year <= LocalDate.now(clock).year - YEARS_UNTIL_PUBLIC_DOMAIN) {
+            CCLicense.PUBLIC_DOMAIN
+        } else {
+            CCLicense.UNKNOWN
         }
 
     private fun performer(item: JsonNode): String? =
@@ -181,6 +206,7 @@ class LibraryOfCongress(private val apiClient: APIClient) : APIService {
     private companion object {
         const val COUNT = 100
         const val MAX_TAG_LENGTH = 70
+        const val YEARS_UNTIL_PUBLIC_DOMAIN = 101
         val JUKEBOX_FACET: String = URLEncoder.encode("partof:national jukebox", "UTF-8")
     }
 }

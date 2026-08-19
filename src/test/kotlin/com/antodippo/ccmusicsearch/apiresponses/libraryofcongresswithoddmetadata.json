@@ -5,13 +5,17 @@
       "url": "https://www.loc.gov/collections/national-jukebox/",
       "title": "National Jukebox",
       "date": "2011",
-      "online_format": ["web page"]
+      "online_format": [
+        "web page"
+      ]
     },
     {
       "id": "http://www.loc.gov/item/jukebox-00000/",
       "url": "https://www.loc.gov/item/jukebox-00000/",
       "title": "Undated cylinder",
-      "online_format": ["audio"]
+      "online_format": [
+        "audio"
+      ]
     },
     {
       "id": "http://www.loc.gov/item/jukebox-00001/",
@@ -19,15 +23,36 @@
       "contributor_primary": "McDonald, Fred",
       "date": "1912",
       "subject": "vocal",
-      "online_format": ["audio"]
+      "online_format": [
+        "audio"
+      ]
     },
     {
       "id": "http://www.loc.gov/item/jukebox-00002/",
       "url": "https://www.loc.gov/item/jukebox-00002/",
       "title": "No online_format at all",
-      "contributor": ["someone, else"],
-      "dates": ["1915-06-01"],
+      "contributor": [
+        "someone, else"
+      ],
+      "dates": [
+        "1915-06-01"
+      ],
       "subject": []
+    },
+    {
+      "id": "http://www.loc.gov/item/jukebox-00003/",
+      "url": "https://www.loc.gov/item/jukebox-00003/",
+      "title": "Too recent to be public domain",
+      "contributor_primary": [
+        "someone, recent"
+      ],
+      "date": "1960-04-02",
+      "subject": [
+        "vocal"
+      ],
+      "online_format": [
+        "audio"
+      ]
     }
   ]
 }

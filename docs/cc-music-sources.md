@@ -121,13 +121,19 @@ rather than authenticating. The National Jukebox is 5,882 recordings from 1900�
 domain under the Music Modernization Act: a genuinely distinct catalogue nothing else here
 touches, and the only one that is unambiguously *music* rather than sound.
 
-The query is pinned to that collection with `fa=partof:national jukebox`, and **that pinning
-is what makes the licence honest**. loc.gov states rights as free prose rather than as a
-licence URL, so `CCLicense.fromUrl` has nothing to read and the licence is hard-coded to
-`PUBLIC_DOMAIN`. That is only defensible because the collection is known to be public domain
-end to end. Across `loc.gov/audio` at large it would be false — the wider endpoint mixes in
-material still in copyright, which is the Icons8 mistake in a new costume. If the facet is
-ever dropped, the hard-coded licence has to go with it.
+**The licence is decided per record, from its date.** loc.gov states rights as free prose
+rather than as a licence URL, so `CCLicense.fromUrl` has nothing to read — and the prose it
+does state is unhelpful: every Jukebox record carries `item.rights_advisory` = *"Inclusion of
+the recording in the National Jukebox, courtesy of Sony Music Entertainment or EMI Music"*,
+wording that predates the Music Modernization Act.
+
+So the date decides instead. Under the MMA a US recording enters the public domain on 1
+January 101 years after publication, which today releases everything up to and including
+1925. A record at or before that line is `PUBLIC_DOMAIN`; anything after it is `UNKNOWN`,
+because `PUBLIC_DOMAIN` sets `allowsCommercialUse()` and would tell someone they may sell a
+recording that is still somebody's — the mistake Icons8 was removed for. The cut-off is
+computed rather than written down, so it advances on its own each January; the `Clock` is
+injected so tests can pin it.
 
 No weight penalty in `RelevanceRanker`: unlike Europeana and Freesound this is a music
 collection, so it competes on equal footing.
@@ -251,20 +257,17 @@ captured and is the test fixture. Three things it corrected:
 - `date` is a full ISO date (`1923-11-07`), not the bare year that was assumed, and `dates`
   holds plain dates rather than timestamps.
 
-**Still open — and it decides whether this source can ship at all:** every sampled record
-carries `item.rights_advisory` = *"Inclusion of the recording in the National Jukebox,
-courtesy of Sony Music Entertainment or EMI Music"*. That is not a public domain statement.
-Under the Music Modernization Act every US recording published through 1925 is public domain
-as of 1 January 2026, and the sampled records run 1918–1923, so the *law* says public
-domain while the *metadata* still credits the labels — text that predates the MMA, since the
-Jukebox launched in 2011 under a Sony agreement. Because `PUBLIC_DOMAIN` makes
-`allowsCommercialUse()` true, the site would be telling people they may commercially reuse a
-recording whose own catalogue entry names a label. See the open question on the PR.
+It also surfaced the rights question that shaped the licence rule above: every sampled
+record credits Sony Music Entertainment or EMI in `item.rights_advisory`, which is not a
+public domain statement, while the MMA says those same 1918–1923 recordings are public
+domain. Resolved by trusting the date rather than the catalogue note, and by declining to
+claim anything for records past the line.
 
 Still unverified for the Library:
 
 - That loc.gov serves a plain `java.net.http` client over time: it is protective of automated
   traffic and `ApiClientViaHttp` sends no custom User-Agent. A 403 would be silent, showing up
   only as the Library never contributing results.
-- Whether any record in the collection is dated after 1925, which is what the licence
-  question above turns on.
+- Whether any record in the collection is dated after 1925. Those now show as "Licence
+  unknown" rather than as public domain, which is safe but invisible under the "Commercial
+  use OK" filter — worth knowing how many there are.

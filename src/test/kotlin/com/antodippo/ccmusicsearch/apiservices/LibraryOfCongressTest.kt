@@ -11,15 +11,25 @@ import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import org.springframework.boot.test.context.SpringBootTest
 import java.net.URI
+import java.time.Clock
+import java.time.Instant
 import java.time.LocalDate
+import java.time.ZoneOffset
 
 @SpringBootTest
 class LibraryOfCongressTest {
 
+    /**
+     * Pinned so the public domain cut-off does not move under the assertions. On this date
+     * the Music Modernization Act has released everything published up to and including
+     * 1925.
+     */
+    private val clock: Clock = Clock.fixed(Instant.parse("2026-08-19T00:00:00Z"), ZoneOffset.UTC)
+
     /** The first three results of a real `q=jazz` response, fields untouched. */
     @Test
     fun testItFetchesAJsonAndReturnsAListOfSearchResults() = runBlocking {
-        val libraryOfCongress = LibraryOfCongress(ApiClientThatReadsFromFile("libraryofcongress"))
+        val libraryOfCongress = LibraryOfCongress(ApiClientThatReadsFromFile("libraryofcongress"), clock)
         val results = libraryOfCongress.search("test")
 
         val expectedResults = listOf(
@@ -69,7 +79,7 @@ class LibraryOfCongressTest {
     @Test
     fun testItCopesWithResultsThatAreNotUsableRecordings() = runBlocking {
         val libraryOfCongress =
-            LibraryOfCongress(ApiClientThatReadsFromFile("libraryofcongresswithoddmetadata"))
+            LibraryOfCongress(ApiClientThatReadsFromFile("libraryofcongresswithoddmetadata"), clock)
         val results = libraryOfCongress.search("test")
 
         val expectedResults = listOf(
@@ -100,6 +110,19 @@ class LibraryOfCongressTest {
                 externalLink = URI.create("https://www.loc.gov/item/jukebox-00002/"),
                 license = CCLicense.PUBLIC_DOMAIN,
                 service = SearchService.LIBRARYOFCONGRESS
+            ),
+            SearchResult(
+                author = "Someone, Recent",
+                title = "Too recent to be public domain",
+                duration = 0,
+                bpm = 0,
+                tags = "vocal",
+                date = LocalDate.parse("1960-04-02"),
+                externalLink = URI.create("https://www.loc.gov/item/jukebox-00003/"),
+                // Past the Music Modernization Act line, so we decline to call it public
+                // domain rather than clearing it for commercial reuse.
+                license = CCLicense.UNKNOWN,
+                service = SearchService.LIBRARYOFCONGRESS
             )
         )
 
@@ -112,7 +135,7 @@ class LibraryOfCongressTest {
 
     @Test
     fun testItReturnsAnEmptyListWhenTheClientThrowsAnException() = runBlocking {
-        val libraryOfCongress = LibraryOfCongress(ApiClientThatThrows())
+        val libraryOfCongress = LibraryOfCongress(ApiClientThatThrows(), clock)
         val results = libraryOfCongress.search("test")
 
         assertEquals(emptyList<SearchResult>(), results)
@@ -120,7 +143,7 @@ class LibraryOfCongressTest {
 
     @Test
     fun testItReturnsAnEmptyListWhenTheClientReturnsAnEmptyJson() = runBlocking {
-        val libraryOfCongress = LibraryOfCongress(ApiClientThatReadsFromFile("emptyresponse"))
+        val libraryOfCongress = LibraryOfCongress(ApiClientThatReadsFromFile("emptyresponse"), clock)
         val results = libraryOfCongress.search("test")
 
         assertEquals(emptyList<SearchResult>(), results)
@@ -128,7 +151,7 @@ class LibraryOfCongressTest {
 
     @Test
     fun testItReturnsAnEmptyListWhenTheClientReturnsAnEmptyBody() = runBlocking {
-        val libraryOfCongress = LibraryOfCongress(ApiClientThatReturnsAnEmptyBody())
+        val libraryOfCongress = LibraryOfCongress(ApiClientThatReturnsAnEmptyBody(), clock)
         val results = libraryOfCongress.search("test")
 
         assertEquals(emptyList<SearchResult>(), results)
