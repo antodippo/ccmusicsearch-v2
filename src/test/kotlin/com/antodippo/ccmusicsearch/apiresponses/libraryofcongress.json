@@ -1,0 +1,38 @@
+{
+  "results": [
+    {
+      "id": "http://www.loc.gov/item/jukebox-12345/",
+      "url": "https://www.loc.gov/item/jukebox-12345/",
+      "title": "The Stars and Stripes Forever",
+      "contributor": ["sousa, john philip", "united states marine band"],
+      "date": "1909",
+      "dates": ["1909-01-01T00:00:00Z"],
+      "subject": ["marches", "band music", "patriotic music"],
+      "online_format": ["audio"],
+      "partof": ["national jukebox"]
+    },
+    {
+      "id": "http://www.loc.gov/item/jukebox-67890/",
+      "url": "https://www.loc.gov/item/jukebox-67890/",
+      "title": "Livery Stable Blues",
+      "contributor": ["Original Dixieland Jass Band"],
+      "dates": ["1917-02-26T00:00:00Z"],
+      "subject": "jazz",
+      "online_format": ["audio"],
+      "partof": ["national jukebox"]
+    },
+    {
+      "id": "http://www.loc.gov/collections/national-jukebox/",
+      "url": "https://www.loc.gov/collections/national-jukebox/",
+      "title": "National Jukebox",
+      "date": "2011",
+      "online_format": ["web page"]
+    },
+    {
+      "id": "http://www.loc.gov/item/jukebox-00000/",
+      "url": "https://www.loc.gov/item/jukebox-00000/",
+      "title": "Undated cylinder",
+      "online_format": ["audio"]
+    }
+  ]
+}

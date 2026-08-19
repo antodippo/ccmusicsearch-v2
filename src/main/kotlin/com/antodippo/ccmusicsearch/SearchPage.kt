@@ -75,8 +75,9 @@ data class SearchPage(
             sourceNoun: String,
         ): String = when {
             query == null ->
-                "Search Jamendo, ccMixter, Internet Archive and Freesound at once for " +
-                    "free, Creative Commons-licensed music for videos, podcasts and streams. " +
+                "Search Jamendo, ccMixter, Internet Archive, Freesound and the Library of " +
+                    "Congress at once for free, Creative Commons and public domain music for " +
+                    "videos, podcasts and streams. " +
                     "Filter by licence, length and BPM."
 
             resultCount == 0 ->
@@ -289,6 +290,7 @@ internal fun SearchService.label(): String = when (this) {
     SearchService.CCMIXTER -> "ccMixter"
     SearchService.INTERNETARCHIVE -> "Internet Archive"
     SearchService.FREESOUND -> "Freesound"
+    SearchService.LIBRARYOFCONGRESS -> "Library of Congress"
 }
 
 /** What the service's popularity counter actually counts. */
@@ -297,6 +299,8 @@ internal fun SearchService.popularityMetric(): String = when (this) {
     SearchService.CCMIXTER -> "ratings"
     SearchService.INTERNETARCHIVE -> "downloads"
     SearchService.FREESOUND -> "downloads"
+    // Unreachable: the Library exposes no counter, and popularityLabel returns before it.
+    SearchService.LIBRARYOFCONGRESS -> "plays"
 }
 
 internal fun CCLicense.label(): String = when (this) {
