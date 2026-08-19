@@ -334,6 +334,7 @@ html:not([data-js]) .load-more { display: none; }
 .dot-ccmixter { background: #7a8a5e; }
 .dot-internetarchive { background: #8c491a; }
 .dot-freesound { background: #56633f; }
+.dot-libraryofcongress { background: #7d5a4f; }
 
 /* switch */
 .switch {
