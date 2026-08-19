@@ -7,7 +7,6 @@ At the moment it uses these web services API to find music that has been release
 
 - [Jamendo](https://www.jamendo.com/)
 - [CCMixter](http://ccmixter.org/)
-- [Icons8](https://icons8.com/music)
 - [Internet Archive](https://archive.org/)
 - [Freesound](https://freesound.org/)
 - ~~SoundCloud~~ (API not available anymore)

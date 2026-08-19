@@ -53,7 +53,7 @@
             "@type": "WebSite",
             "name": "CCMusic Search",
             "url": "https://ccmusicsearch.com/",
-            "description": "A search engine for Creative Commons music, covering Jamendo, ccMixter, Icons8, Internet Archive and Freesound.",
+            "description": "A search engine for Creative Commons music, covering Jamendo, ccMixter, Internet Archive and Freesound.",
             "inLanguage": "en",
             "potentialAction": {
                 "@type": "SearchAction",
@@ -81,6 +81,17 @@
     </script>
 </head>
 <body>
+<!-- The external-link icon is drawn once per result row. Defining it here and referencing it
+     with <use> keeps one copy in the document instead of one per row, which matters now that a
+     search can return several hundred of them. -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+    <symbol id="icon-external" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M14 4h6v6"></path>
+        <path d="M20 4l-9 9"></path>
+        <path d="M18 14v5a1 1 0 01-1 1H5a1 1 0 01-1-1V7a1 1 0 011-1h5"></path>
+    </symbol>
+</svg>
 {{#page}}
 <!-- The attributes are what analytics.js reports; the browser decodes the entities Mustache
      writes, which a value built into a script block would not. -->
@@ -232,7 +243,7 @@
                             </span>
                             <span class="range-bound range-bound-max">{{tempo.ceilingLabel}}</span>
                         </div>
-                        <p class="rail-note">Only ccMixter and Icons8 report BPM — tracks without one are kept.</p>
+                        <p class="rail-note">Only ccMixter reports BPM — tracks without one are kept.</p>
                     </div>
                     {{/tempo.available}}
 
@@ -335,12 +346,7 @@
 
                         <a class="row-listen" href="{{externalLink}}" target="_blank" rel="noopener">
                             Listen
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                 stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                                <path d="M14 4h6v6"></path>
-                                <path d="M20 4l-9 9"></path>
-                                <path d="M18 14v5a1 1 0 01-1 1H5a1 1 0 01-1-1V7a1 1 0 011-1h5"></path>
-                            </svg>
+                            <svg width="14" height="14" aria-hidden="true"><use href="#icon-external"/></svg>
                         </a>
                     </div>
                 </li>

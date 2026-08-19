@@ -75,7 +75,7 @@ data class SearchPage(
             sourceNoun: String,
         ): String = when {
             query == null ->
-                "Search Jamendo, ccMixter, Icons8, Internet Archive and Freesound at once for " +
+                "Search Jamendo, ccMixter, Internet Archive and Freesound at once for " +
                     "free, Creative Commons-licensed music for videos, podcasts and streams. " +
                     "Filter by licence, length and BPM."
 
@@ -132,7 +132,7 @@ data class SearchPage(
         }
 
         /**
-         * Only ccMixter and Icons8 report a tempo; everything else sends 0. Tracks without
+         * Only ccMixter reports a tempo; everything else sends 0. Tracks without
          * one are never filtered out, so a missing BPM is not a reason to hide a result.
          */
         private fun tempoRange(results: List<SearchResult>): RangeView {
@@ -287,7 +287,6 @@ internal fun durationLabel(seconds: Int): String {
 internal fun SearchService.label(): String = when (this) {
     SearchService.JAMENDO -> "Jamendo"
     SearchService.CCMIXTER -> "ccMixter"
-    SearchService.ICONS8 -> "Icons8"
     SearchService.INTERNETARCHIVE -> "Internet Archive"
     SearchService.FREESOUND -> "Freesound"
 }
@@ -296,7 +295,6 @@ internal fun SearchService.label(): String = when (this) {
 internal fun SearchService.popularityMetric(): String = when (this) {
     SearchService.JAMENDO -> "plays"
     SearchService.CCMIXTER -> "ratings"
-    SearchService.ICONS8 -> "plays"
     SearchService.INTERNETARCHIVE -> "downloads"
     SearchService.FREESOUND -> "downloads"
 }
