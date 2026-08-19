@@ -23,6 +23,10 @@ class InternetArchive(private val apiClient: APIClient) : APIService {
     private val musicOnly =
         "mediatype:(audio) AND collection:(audio_music OR netlabels) AND licenseurl:(*http*)"
 
+    private companion object {
+        const val ROWS = 150
+    }
+
     private val fields = listOf(
         "identifier", "title", "creator", "subject",
         "licenseurl", "publicdate", "downloads", "mediatype"
@@ -35,11 +39,14 @@ class InternetArchive(private val apiClient: APIClient) : APIService {
         val response: HttpResponse<String>
         val tracksArray: JsonNode?
         try {
+            // rows is spent before the mediatype filter and toSearchResult below drop
+            // anything unusable, so the archive delivers fewer results than it is asked for
+            // — asking for more is what closes that gap rather than what widens the page.
             // No sort parameter: the archive defaults to relevance, which is what we want.
             // mediatype has to be part of q — passing it as its own parameter is rejected
             // with [UNSUPPORTED_VALUE] and there is no "response" key to read back.
             response = apiClient.get(
-                URI("https://archive.org/advancedsearch.php?q=$escapedQuery&rows=50&output=json$fieldParams")
+                URI("https://archive.org/advancedsearch.php?q=$escapedQuery&rows=$ROWS&output=json$fieldParams")
             )
             val jsonBody = jacksonObjectMapper().readValue<JsonNode>(response.body())
             tracksArray = jsonBody["response"]["docs"]

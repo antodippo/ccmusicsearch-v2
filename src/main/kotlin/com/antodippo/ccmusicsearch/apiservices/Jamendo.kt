@@ -20,10 +20,13 @@ class Jamendo(private val apiClient: APIClient) : APIService {
 
         val jsonBody: JsonNode
         try {
+            // 200 is the documented ceiling for limit. Jamendo answers an out-of-range
+            // limit with an error rather than clamping, which the catch below turns into
+            // "Jamendo contributed nothing" — visible in the source rail, never fatal.
             // durationbetween keeps out the stingers and idents at one end and the
             // hour-long DJ sets at the other. Jamendo's default response carries no
             // popularity counter; include=stats would add one if we ever want it.
-            val response = apiClient.get(URI("https://api.jamendo.com/v3.0/tracks/?client_id=$apiKey&format=jsonpretty&order=relevance&limit=50&durationbetween=60_600&search=$escapedQuery"))
+            val response = apiClient.get(URI("https://api.jamendo.com/v3.0/tracks/?client_id=$apiKey&format=jsonpretty&order=relevance&limit=200&durationbetween=60_600&search=$escapedQuery"))
             // Parsed inside the try so a malformed or empty body costs us Jamendo's results
             // rather than every service's.
             jsonBody = jacksonObjectMapper().readValue(response.body())

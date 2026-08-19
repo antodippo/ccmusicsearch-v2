@@ -24,12 +24,14 @@ class Freesound(private val apiClient: APIClient) : APIService {
         val tracksArray: JsonNode?
         try {
             val fields = "id,name,username,tags,duration,created,url,license,num_downloads"
+            // page_size=150 is the documented ceiling; one large request rather than
+            // several paged ones keeps us well inside the rate limit.
             // sort=score is Freesound's relevance order. The duration floor is the only
             // lever that separates pieces of music from the one-shots and loops that make
             // up most of the library — it stays a sample site, so RelevanceRanker also
             // weights it below the music services.
             val filter = URLEncoder.encode("duration:[60 TO *]", "UTF-8")
-            response = apiClient.get(URI("https://freesound.org/apiv2/search/text/?token=$apiKey&query=$escapedQuery&sort=score&filter=$filter&fields=$fields&page_size=50"))
+            response = apiClient.get(URI("https://freesound.org/apiv2/search/text/?token=$apiKey&query=$escapedQuery&sort=score&filter=$filter&fields=$fields&page_size=150"))
             val jsonBody = jacksonObjectMapper().readValue<JsonNode>(response.body())
             tracksArray = jsonBody["results"]
         } catch (e: Exception) {
