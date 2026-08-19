@@ -235,15 +235,36 @@ Against a real Europeana key, still to confirm:
 - Page weight at the new ceiling: `curl -s 'localhost:8080/?q=jazz' | wc -c`, plus the gzipped
   transfer size.
 
-For the Library of Congress, which needs no key but was equally unreachable from where this
-was written:
+### Library of Congress: checked against a real response
 
-- That `fa=partof:national jukebox` is the right facet syntax and actually narrows to the
-  collection. **If it silently does not, the hard-coded `PUBLIC_DOMAIN` becomes a false
-  claim** — this is the one check that must not be skipped.
-- That `c=100` is honoured and `at=results` returns the array on its own.
-- That loc.gov serves a plain `java.net.http` client: it is protective of automated traffic
-  and `ApiClientViaHttp` sends no custom User-Agent. A 403 here would be silent, showing up
+The query works and the field shapes are now known, because a real `q=jazz` response was
+captured and is the test fixture. Three things it corrected:
+
+- **`contributor` is the wrong field for the artist.** It lists everyone involved in
+  cataloguing order, which puts the composer or the conductor first as often as the
+  performer — "Jazz baby" would have been credited to Rosario Bourdon, its conductor, rather
+  than to Marion Harris, who sang it. `contributor_primary` is the field that names the act.
+  Four of five sampled records would have shown the wrong artist.
+- **Subject headings contain their own commas.** "ragtime, jazz, and more" is one Library
+  heading, and the tag chips are built by splitting on commas — so it would have arrived as
+  three chips, the last of them "and more".
+- `date` is a full ISO date (`1923-11-07`), not the bare year that was assumed, and `dates`
+  holds plain dates rather than timestamps.
+
+**Still open — and it decides whether this source can ship at all:** every sampled record
+carries `item.rights_advisory` = *"Inclusion of the recording in the National Jukebox,
+courtesy of Sony Music Entertainment or EMI Music"*. That is not a public domain statement.
+Under the Music Modernization Act every US recording published through 1925 is public domain
+as of 1 January 2026, and the sampled records run 1918–1923, so the *law* says public
+domain while the *metadata* still credits the labels — text that predates the MMA, since the
+Jukebox launched in 2011 under a Sony agreement. Because `PUBLIC_DOMAIN` makes
+`allowsCommercialUse()` true, the site would be telling people they may commercially reuse a
+recording whose own catalogue entry names a label. See the open question on the PR.
+
+Still unverified for the Library:
+
+- That loc.gov serves a plain `java.net.http` client over time: it is protective of automated
+  traffic and `ApiClientViaHttp` sends no custom User-Agent. A 403 would be silent, showing up
   only as the Library never contributing results.
-- The real shape of `contributor`, `date`/`dates` and `subject`, against the hand-built
-  fixture.
+- Whether any record in the collection is dated after 1925, which is what the licence
+  question above turns on.

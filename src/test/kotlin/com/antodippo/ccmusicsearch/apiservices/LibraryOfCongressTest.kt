@@ -16,6 +16,7 @@ import java.time.LocalDate
 @SpringBootTest
 class LibraryOfCongressTest {
 
+    /** The first three results of a real `q=jazz` response, fields untouched. */
     @Test
     fun testItFetchesAJsonAndReturnsAListOfSearchResults() = runBlocking {
         val libraryOfCongress = LibraryOfCongress(ApiClientThatReadsFromFile("libraryofcongress"))
@@ -23,36 +24,89 @@ class LibraryOfCongressTest {
 
         val expectedResults = listOf(
             SearchResult(
-                // Catalogued lower-case; only the leading letters are touched.
-                author = "Sousa, John Philip",
-                title = "The Stars and Stripes Forever",
+                author = "Benson Orchestra Of Chicago",
+                title = "Oklahoma Indian jazz",
                 duration = 0,
                 bpm = 0,
-                tags = "marches, band music, patriotic music",
-                // The bare year the recording is catalogued under.
-                date = LocalDate.parse("1909-01-01"),
-                externalLink = URI.create("https://www.loc.gov/item/jukebox-12345/"),
+                // "ragtime, jazz, and more" is one heading, kept whole; the fourth heading
+                // does not fit inside the budget and is dropped rather than cut short.
+                tags = "ragtime / jazz / and more, instrumental, victor",
+                date = LocalDate.parse("1923-11-07"),
+                externalLink = URI.create("https://www.loc.gov/item/jukebox-68453/"),
                 license = CCLicense.PUBLIC_DOMAIN,
                 service = SearchService.LIBRARYOFCONGRESS
             ),
             SearchResult(
-                // Already capitalised, and left exactly as catalogued.
-                author = "Original Dixieland Jass Band",
-                title = "Livery Stable Blues",
+                // contributor lists Rosario Bourdon, the conductor, first. The singer is
+                // who the record is by, and contributor_primary is the field that says so.
+                author = "Harris, Marion",
+                title = "Jazz baby",
                 duration = 0,
                 bpm = 0,
-                // subject as a bare string rather than a list.
-                tags = "jazz",
-                // No `date`, so the full timestamp in `dates` is used.
-                date = LocalDate.parse("1917-02-26"),
-                externalLink = URI.create("https://www.loc.gov/item/jukebox-67890/"),
+                tags = "victor, humorous songs, ragtime / jazz / and more, vocal",
+                date = LocalDate.parse("1919-04-18"),
+                externalLink = URI.create("https://www.loc.gov/item/jukebox-31920/"),
+                license = CCLicense.PUBLIC_DOMAIN,
+                service = SearchService.LIBRARYOFCONGRESS
+            ),
+            SearchResult(
+                // Likewise: contributor opens with Tom Delaney, who wrote it.
+                author = "Original Dixieland Jazz Band",
+                title = "Jazz me blues",
+                duration = 0,
+                bpm = 0,
+                tags = "blues, ragtime / jazz / and more, instrumental, victor",
+                date = LocalDate.parse("1921-05-03"),
+                externalLink = URI.create("https://www.loc.gov/item/jukebox-40212/"),
                 license = CCLicense.PUBLIC_DOMAIN,
                 service = SearchService.LIBRARYOFCONGRESS
             )
         )
 
-        // The fixture also holds a collection landing page, dropped for not being audio, and
-        // an item with no date at all, dropped rather than given an invented one.
+        assertEquals(expectedResults, results)
+    }
+
+    @Test
+    fun testItCopesWithResultsThatAreNotUsableRecordings() = runBlocking {
+        val libraryOfCongress =
+            LibraryOfCongress(ApiClientThatReadsFromFile("libraryofcongresswithoddmetadata"))
+        val results = libraryOfCongress.search("test")
+
+        val expectedResults = listOf(
+            SearchResult(
+                // Already capitalised, so the interior capital survives untouched.
+                author = "McDonald, Fred",
+                title = "Bare string subject, no url, year only",
+                duration = 0,
+                bpm = 0,
+                // subject as a bare string rather than a list.
+                tags = "vocal",
+                // A bare catalogue year rather than a full date.
+                date = LocalDate.parse("1912-01-01"),
+                // No url, so the id stands in.
+                externalLink = URI.create("http://www.loc.gov/item/jukebox-00001/"),
+                license = CCLicense.PUBLIC_DOMAIN,
+                service = SearchService.LIBRARYOFCONGRESS
+            ),
+            SearchResult(
+                // No contributor_primary, so it falls back to contributor.
+                author = "Someone, Else",
+                title = "No online_format at all",
+                duration = 0,
+                bpm = 0,
+                tags = "",
+                // No date, so the timestamp in dates is used.
+                date = LocalDate.parse("1915-06-01"),
+                externalLink = URI.create("https://www.loc.gov/item/jukebox-00002/"),
+                license = CCLicense.PUBLIC_DOMAIN,
+                service = SearchService.LIBRARYOFCONGRESS
+            )
+        )
+
+        // The collection landing page is dropped for not being audio, and the undated
+        // cylinder is dropped rather than given an invented date. The item with no
+        // online_format at all is kept: the query is already pinned to an audio
+        // collection, so a missing field is not evidence against it.
         assertEquals(expectedResults, results)
     }
 

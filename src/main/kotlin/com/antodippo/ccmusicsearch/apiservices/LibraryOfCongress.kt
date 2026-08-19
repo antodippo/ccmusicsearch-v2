@@ -65,7 +65,11 @@ class LibraryOfCongress(private val apiClient: APIClient) : APIService {
 
         return try {
             SearchResult(
-                author = firstOf(item, "contributor")?.let { displayName(it) } ?: "",
+                // contributor_primary, not contributor: the latter lists everyone involved
+                // in cataloguing order, which puts the composer or the conductor first as
+                // often as the performer. On a real page of results it credited "Jazz baby"
+                // to its conductor rather than to Marion Harris, who sang it.
+                author = performer(item) ?: "",
                 title = firstOf(item, "title") ?: "",
                 // Not in the search response; it lives on the item record, which would be a
                 // second request each. The length filter already skips results reporting
@@ -136,16 +140,47 @@ class LibraryOfCongress(private val apiClient: APIClient) : APIService {
             word.replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() }
         }
 
+    private fun performer(item: JsonNode): String? =
+        (firstOf(item, "contributor_primary") ?: firstOf(item, "contributor"))
+            ?.let { displayName(it) }
+
     private fun tags(subject: JsonNode?): String = when {
         subject == null -> ""
-        subject.isValueNode -> subject.asText().take(70)
+        subject.isValueNode -> wholeHeadings(heading(subject.asText()))
         // asText() rather than the node itself: a JsonNode stringifies back to JSON, which
         // would carry its quotes into the tag.
-        else -> subject.take(7).joinToString(", ") { it.asText() }.take(70)
+        else -> wholeHeadings(subject.take(7).joinToString(", ") { heading(it.asText()) })
     }
+
+    /**
+     * The other services cap their tags at 70 characters and let the cut fall where it may.
+     * Library headings are long enough to straddle that boundary routinely — "ethnic
+     * characterizations" arrives as "ethnic characterizati" — so a trailing fragment is
+     * dropped rather than shown. A single heading longer than the budget still gets cut,
+     * because showing part of it beats showing none.
+     */
+    private fun wholeHeadings(tags: String): String {
+        if (tags.length <= MAX_TAG_LENGTH) {
+            return tags
+        }
+
+        val cut = tags.take(MAX_TAG_LENGTH)
+
+        return cut.substringBeforeLast(", ", missingDelimiterValue = cut)
+    }
+
+    /**
+     * Library subject headings can contain commas of their own — "ragtime, jazz, and more"
+     * is one heading, not three. The chips are built by splitting the joined string on
+     * commas, so an internal one would break that heading into three fragments, the last of
+     * them the word "more".
+     */
+    private fun heading(subject: String): String =
+        subject.split(',').joinToString(" / ") { it.trim() }
 
     private companion object {
         const val COUNT = 100
+        const val MAX_TAG_LENGTH = 70
         val JUKEBOX_FACET: String = URLEncoder.encode("partof:national jukebox", "UTF-8")
     }
 }

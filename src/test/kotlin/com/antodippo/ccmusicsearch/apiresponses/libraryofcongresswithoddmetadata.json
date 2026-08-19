@@ -1,0 +1,33 @@
+{
+  "results": [
+    {
+      "id": "http://www.loc.gov/collections/national-jukebox/",
+      "url": "https://www.loc.gov/collections/national-jukebox/",
+      "title": "National Jukebox",
+      "date": "2011",
+      "online_format": ["web page"]
+    },
+    {
+      "id": "http://www.loc.gov/item/jukebox-00000/",
+      "url": "https://www.loc.gov/item/jukebox-00000/",
+      "title": "Undated cylinder",
+      "online_format": ["audio"]
+    },
+    {
+      "id": "http://www.loc.gov/item/jukebox-00001/",
+      "title": "Bare string subject, no url, year only",
+      "contributor_primary": "McDonald, Fred",
+      "date": "1912",
+      "subject": "vocal",
+      "online_format": ["audio"]
+    },
+    {
+      "id": "http://www.loc.gov/item/jukebox-00002/",
+      "url": "https://www.loc.gov/item/jukebox-00002/",
+      "title": "No online_format at all",
+      "contributor": ["someone, else"],
+      "dates": ["1915-06-01"],
+      "subject": []
+    }
+  ]
+}
