@@ -101,19 +101,6 @@ via Freesound's own filter terms) is open, and needs API access to get the field
 
 ## 4. New sources: fresh pass
 
-### Adding: Europeana
-
-`https://api.europeana.eu/record/v2/search.json` with `qf=TYPE:SOUND&reusability=open`.
-European broadcast and heritage sound archives — zero overlap with the four we keep. Free
-self-serve key, `rows` maxes at 100, and `reusability=open` restricts results to Public Domain
-Mark, CC0, CC BY and CC BY-SA. `edmRights` is a rights **URL**, so it feeds `CCLicense.fromUrl`
-without new mapping code.
-
-**The risk, stated plainly:** `TYPE:SOUND` is not `TYPE:MUSIC`. Heritage sound archives carry
-oral history, radio broadcast and field recordings alongside music, which is exactly how the
-Wikimedia catalogue failed below. It therefore ships at weight 0.5, and its relevance for
-music is the first thing to check against a real key.
-
 ### Added: Library of Congress
 
 `https://www.loc.gov/audio/?q=…&fo=json` needs **no key at all** — the Library rate-limits
@@ -137,6 +124,66 @@ injected so tests can pin it.
 
 No weight penalty in `RelevanceRanker`: unlike Europeana and Freesound this is a music
 collection, so it competes on equal footing.
+
+### Evaluated and rejected: Europeana
+
+Built, tested against the live API, and dropped. `TYPE:SOUND` is not `TYPE:MUSIC`, and that
+turned out to matter exactly as much as feared.
+
+`https://api.europeana.eu/record/v2/search.json` with `qf=TYPE:SOUND&reusability=open`: free
+self-serve key, `rows` maxes at 100, `reusability=open` restricts results to Public Domain
+Mark, CC0, CC BY and CC BY-SA, and the licence arrives as a URL that `CCLicense.fromUrl` reads
+without new mapping. All of that works. The catalogue is the problem.
+
+**The relevance check.** `q=jazz` looked encouraging — Romanian Radio chamber and jazz
+recordings, all genuinely music. `q=guitar` is the query that tells the truth, and it returned
+**7 music in the top 20**:
+
+| | count |
+|---|---|
+| Music | 7 |
+| "Sounds of Changes" — foley of guitar *making*: wood chisel, planing, sandpaper, honing the planer | 11 |
+| Romanian Radio poetry readings — "Ghitara" and "Chitara" are poem titles | 2 |
+
+More than half of one page is a single provider's recordings of a luthier's workshop. This is
+the failure that ruled out Openverse's Wikimedia catalogue, repeated: the query matched the
+*word* guitar, not the instrument being played. A service weight does not help, because the
+noise arrives inside the same 100 rows as the signal.
+
+**And the catalogue is thin.** `totalResults` was **141** for a mainstream instrument across
+the whole of Europeana's openly-licensed sound. Even a perfect filter leaves roughly fifty
+usable recordings for "guitar", against a service integration, an API key and its maintenance.
+
+**Why not just filter it.** Every non-music result had an empty `dcTypeLangAware.en`, while
+six of the seven music results carried one — so filtering on that field would work. But what
+it actually selects is *providers who fill in a type field*: a proxy for cataloguing
+diligence, not for music, which breaks the day a thorough non-music provider appears. The one
+genuinely music-semantic signal, Europeana's own `soundgenres/Music/…` concept branch,
+appeared on 2 of 20 — high precision, almost no recall.
+
+#### What the integration taught us anyway
+
+Worth keeping, because it applies to the next aggregator as much as to this one. A real
+response falsified **three of the four field names** taken from the documentation:
+
+| Documented | Actually sent | Consequence had it shipped |
+|---|---|---|
+| `edmRights` | `rights` | none — the parser already fell back |
+| `dcCreator` | absent | byline falls to `dataProvider`, the broadcaster |
+| `year` | absent | **every row dated by ingest, not recording** |
+| `dcSubject` | `dcSubjectLangAware` | **no tags at all, on any row** |
+
+The date was the costly one. With no `year`, a parser falls through to `timestamp_created` —
+when Europeana *ingested* the record. A concert given on `2011-03-08` was catalogued on
+`2023-04-12`, so every row would have carried the wrong decade while looking entirely
+plausible. The recording date lives in `edmTimespan`, whose language-aware label is tagged
+`zxx`: the ISO code for "no linguistic content", because a date is not a word.
+
+Subjects arrive as `dcSubjectLangAware`, an object keyed by language, and the `def` key holds
+Getty and Europeana vocabulary URIs rather than words.
+
+**Do not paste a raw Europeana response anywhere.** It echoes the caller's `wskey` back inside
+`guid`, as `utm_campaign`, and inside `link`.
 
 ### Rejected on access, not content: Dogmazic
 
@@ -187,9 +234,16 @@ Free Art License is a free licence but not a Creative Commons one, so it would l
 
 **The pattern worth naming:** heritage and CC0 aggregators fail identically. Openverse (via
 Wikimedia), Smithsonian and DPLA are enormous, properly-licensed catalogues with almost no
-music in them. Breadth of *open licensing* is not breadth of *music*. Europeana is being tried
-because `TYPE:SOUND` targets sound specifically — but it shares the risk, which is why it
-arrives weighted down and on probation.
+music in them. Breadth of *open licensing* is not breadth of *music*.
+
+Europeana was the case for testing the pattern rather than assuming it: unlike the others it
+can be asked for sound specifically. It was built, run against the live API, and rejected on
+the results — `TYPE:SOUND` still selects for the *word*, and a search for a guitar returns a
+luthier's workshop. Filtering to audio is not the same as filtering to music, and no
+aggregator evaluated here has a filter for the difference.
+
+The rule that follows: a candidate has to be a music catalogue, not a media catalogue with
+music in it. The Library of Congress passed on exactly that basis, and Dogmazic would too.
 
 ### Not Creative Commons — don't be tempted
 
@@ -228,16 +282,12 @@ rankings, so lacking one costs nothing.
 ## Verification still owed
 
 Everything in §4 marked as inherited comes from the 2026-07-29 probes and was not re-run.
-Against a real Europeana key, still to confirm:
+Europeana was checked against a live key and rejected on the results; see §4. Still to
+confirm:
 
-- The response field names the parser assumes (`edmRights`, `dcCreator`, `title`, `year`,
-  `dcSubject`, `id`) — expect at least one to be wrong, and replace the hand-built fixture
-  with a captured response.
-- **Whether Europeana's `TYPE:SOUND` results are actually music.** Search `guitar` and `jazz`,
-  count how many of the first 20 are music rather than interviews or field recordings. If it
-  is mostly not music, narrow the query or drop the integration — do not ship it at weight 0.5
-  and hope.
-- That Jamendo accepts `limit=200` and Freesound honours `page_size=150`.
+- That Jamendo accepts `limit=200` and Freesound honours `page_size=150`. Both are documented
+  ceilings rather than observed ones. A rejected value costs that service's results and
+  nothing else, since each catches its own failures, but it would be silent.
 - Page weight at the new ceiling: `curl -s 'localhost:8080/?q=jazz' | wc -c`, plus the gzipped
   transfer size.
 
