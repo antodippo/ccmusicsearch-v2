@@ -2,7 +2,7 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-	id("org.springframework.boot") version "4.1.0"
+	id("org.springframework.boot") version "4.1.1"
 	kotlin("jvm") version "2.4.10"
 	kotlin("plugin.spring") version "2.4.10"
 	id("info.solidsoft.pitest") version "1.19.0"
@@ -27,7 +27,7 @@ dependencies {
 	// for by name — it was quietly pulling coroutines back to the version Boot ships while
 	// leaving the modules we name at the version we asked for, i.e. a split classpath. A
 	// platform states preferences, so an explicit version above the BOM's still wins.
-	val springBootBom = platform("org.springframework.boot:spring-boot-dependencies:4.1.0")
+	val springBootBom = platform("org.springframework.boot:spring-boot-dependencies:4.1.1")
 	implementation(springBootBom)
 	compileOnly(springBootBom)
 
