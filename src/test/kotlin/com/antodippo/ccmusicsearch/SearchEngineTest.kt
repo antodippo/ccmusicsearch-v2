@@ -8,12 +8,32 @@ import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import java.net.URI
 import java.time.LocalDate
 
 @SpringBootTest
 class SearchEngineTest {
+
+    @Autowired
+    private lateinit var springSearchEngine: SearchEngine
+
+    // loc.gov answers every server-side client with a Cloudflare challenge, so the Library
+    // is off unless switched on. This is the engine Spring builds, not one assembled by hand:
+    // what it is given is every APIService bean, so the flag has to keep the bean out.
+    @Test
+    fun testTheLibraryOfCongressIsNotSearchedUnlessSwitchedOn() {
+        assertEquals(
+            listOf(
+                SearchService.JAMENDO,
+                SearchService.CCMIXTER,
+                SearchService.INTERNETARCHIVE,
+                SearchService.FREESOUND,
+            ).sorted(),
+            springSearchEngine.sources.sorted()
+        )
+    }
 
     @Test
     fun testSearchServicesAreCalledAndResultsAreMergedByRelevance() = runBlocking {
@@ -96,9 +116,24 @@ class SearchEngineTest {
     }
 
     private class ServiceThatThrows : APIService {
+        override val service = SearchService.INTERNETARCHIVE
+
         override suspend fun search(query: String): Collection<SearchResult> {
             throw NullPointerException("get(...) must not be null")
         }
     }
 
+}
+
+@SpringBootTest(properties = ["sources.libraryofcongress.enabled=true"])
+class SearchEngineWithTheLibraryOfCongressSwitchedOnTest {
+
+    @Autowired
+    private lateinit var searchEngine: SearchEngine
+
+    @Test
+    fun testTheFlagBringsTheLibraryOfCongressBack() {
+        assertTrue(SearchService.LIBRARYOFCONGRESS in searchEngine.sources)
+        assertEquals(SearchService.values().size, searchEngine.sources.size)
+    }
 }

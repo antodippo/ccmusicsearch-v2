@@ -1,0 +1,210 @@
+[
+  {
+    "upload_id": 46456,
+    "upload_name": "Luwan House feat Sonja V",
+    "upload_extra": {
+      "usertags": "dance,pop,house,deep,vocals",
+      "ccud": "media,remix,bpm_120_125",
+      "systags": "non_commercial,audio,mp3,44k,stereo,CBR",
+      "featuring": "Sonja V",
+      "bpm": 123,
+      "relative_dir": "content/Reiswerk",
+      "nsfw": false,
+      "num_reviews": 1,
+      "ccplus": true
+    },
+    "user_name": "Reiswerk",
+    "upload_tags": ",media,remix,bpm_120_125,non_commercial,audio,mp3,44k,stereo,CBR,dance,pop,house,deep,vocals,",
+    "upload_num_scores": 6,
+    "file_page_url": "http://ccmixter.org/files/Reiswerk/46456",
+    "user_real_name": "reiswerk",
+    "artist_page_url": "http://ccmixter.org/people/Reiswerk",
+    "license_logo_url": "http://ccmixter.org/ccskins/shared/images/lics/small-by-nc-3.png",
+    "license_url": "http://creativecommons.org/licenses/by-nc/3.0/",
+    "license_name": "Attribution Noncommercial  (3.0)",
+    "upload_date_format": "Tue, Jul 1, 2014 @ 9:21 AM",
+    "files": [
+      {
+        "file_id": 69023,
+        "file_upload": 46456,
+        "file_name": "Reiswerk_-_Luwan_House_feat_Sonja_V.mp3",
+        "file_nicname": "mp3",
+        "file_format_info": {
+          "media-type": "audio",
+          "format-name": "audio-mp3-mp3",
+          "default-ext": "mp3",
+          "mime_type": "audio/mpeg",
+          "sr": "44k",
+          "ch": "stereo",
+          "ps": "2:28",
+          "br": "CBR"
+        },
+        "file_extra": {
+          "sha1": "6XBVFXGALQQLUILRVAXHLJOHSARRGSWA"
+        },
+        "file_filesize": " (4.52MB)",
+        "file_order": 0,
+        "file_is_remote": 0,
+        "file_num_download": 0,
+        "download_url": "http://ccmixter.org/content/Reiswerk/Reiswerk_-_Luwan_House_feat_Sonja_V.mp3",
+        "local_path": "/var/www/ccmixter/content/Reiswerk/Reiswerk_-_Luwan_House_feat_Sonja_V.mp3",
+        "file_rawsize": 4739701
+      }
+    ],
+    "upload_description_plain": "This is a mix between Vocal Deep House, pop and Dance.\r\n\r\ni Hope, you enjoy it!?",
+    "upload_description_html": "This is a mix between Vocal Deep House, pop and Dance.<br />\r\n<br />\r\ni Hope, you enjoy it!?"
+  },
+  {
+    "upload_id": 70960,
+    "upload_name": "Feel Motivated",
+    "upload_extra": {
+      "usertags": "advertising,ambient,atmospheric,background,bright,business,calm,clean,commercial,corporate,emotional,education,hopeful,inspiring,innovation,light,marketing,modern,motivational,medicine,optimistic,presentation,smooth,soft,startup,success,technology,travel,uplifting",
+      "ccud": "sample,media,bpm_110_115",
+      "systags": "non_commercial,image,jpg",
+      "bpm": 112,
+      "relative_dir": "content/Puma_Tunes",
+      "featuring": "",
+      "nsfw": false,
+      "last_op": "replace",
+      "num_reviews": 1
+    },
+    "user_name": "Puma_Tunes",
+    "upload_tags": ",sample,media,bpm_110_115,non_commercial,image,jpg,advertising,ambient,atmospheric,background,bright,business,calm,clean,commercial,corporate,emotional,education,hopeful,inspiring,innovation,light,marketing,modern,motivational,medicine,optimistic,presentation,smooth,soft,startup,success,technology,travel,uplifting,",
+    "file_page_url": "https://ccmixter.org/files/Puma_Tunes/70960",
+    "user_real_name": "Puma_Tunes",
+    "artist_page_url": "https://ccmixter.org/people/Puma_Tunes",
+    "license_logo_url": "https://ccmixter.org/ccskins/shared/images/lics/small-by-nc-3.png",
+    "license_url": "https://creativecommons.org/licenses/by-nc/4.0/",
+    "license_name": "Attribution Noncommercial (4.0)",
+    "upload_date_format": "Sat, Jun 20, 2026 @ 12:37 AM",
+    "files": [
+      {
+        "file_id": 129443,
+        "file_upload": 70960,
+        "file_name": "Puma_Tunes_-_Feel_Motivated_1.jpg",
+        "file_nicname": "MP3",
+        "file_format_info": {
+          "media-type": "image",
+          "format-name": "image-jpg-jpg",
+          "default-ext": "jpg",
+          "mime_type": "image/jpeg",
+          "dim": [
+            1280,
+            1280
+          ]
+        },
+        "file_extra": {
+          "sha1": "YLVW6NWLWLNRGUASZPYKEZ25FR3Z3PUH",
+          "ccud": "",
+          "type": ""
+        },
+        "file_filesize": " (77KB)",
+        "file_order": 0,
+        "file_is_remote": 0,
+        "file_num_download": 0,
+        "download_url": "https://ccmixter.org/content/Puma_Tunes/Puma_Tunes_-_Feel_Motivated_1.jpg",
+        "local_path": "/var/www/ccmixter/content/Puma_Tunes/Puma_Tunes_-_Feel_Motivated_1.jpg",
+        "file_rawsize": 79240
+      }
+    ]
+  },
+  {
+    "upload_id": 90001,
+    "upload_name": "No extra metadata",
+    "user_name": "Reiswerk",
+    "upload_tags": ",media,remix,bpm_120_125,non_commercial,audio,mp3,44k,stereo,CBR,dance,pop,house,deep,vocals,",
+    "upload_num_scores": 6,
+    "file_page_url": "http://ccmixter.org/files/Reiswerk/90001",
+    "user_real_name": "reiswerk",
+    "artist_page_url": "http://ccmixter.org/people/Reiswerk",
+    "license_logo_url": "http://ccmixter.org/ccskins/shared/images/lics/small-by-nc-3.png",
+    "license_url": "http://creativecommons.org/licenses/by-nc/3.0/",
+    "license_name": "Attribution Noncommercial  (3.0)",
+    "upload_date_format": "Tue, Jul 1, 2014 @ 9:21 AM",
+    "files": [
+      {
+        "file_id": 69023,
+        "file_upload": 46456,
+        "file_name": "Reiswerk_-_Luwan_House_feat_Sonja_V.mp3",
+        "file_nicname": "mp3",
+        "file_format_info": {
+          "media-type": "audio",
+          "format-name": "audio-mp3-mp3",
+          "default-ext": "mp3",
+          "mime_type": "audio/mpeg",
+          "sr": "44k",
+          "ch": "stereo",
+          "ps": "2:28",
+          "br": "CBR"
+        },
+        "file_extra": {
+          "sha1": "6XBVFXGALQQLUILRVAXHLJOHSARRGSWA"
+        },
+        "file_filesize": " (4.52MB)",
+        "file_order": 0,
+        "file_is_remote": 0,
+        "file_num_download": 0,
+        "download_url": "http://ccmixter.org/content/Reiswerk/Reiswerk_-_Luwan_House_feat_Sonja_V.mp3",
+        "local_path": "/var/www/ccmixter/content/Reiswerk/Reiswerk_-_Luwan_House_feat_Sonja_V.mp3",
+        "file_rawsize": 4739701
+      }
+    ],
+    "upload_description_plain": "This is a mix between Vocal Deep House, pop and Dance.\r\n\r\ni Hope, you enjoy it!?",
+    "upload_description_html": "This is a mix between Vocal Deep House, pop and Dance.<br />\r\n<br />\r\ni Hope, you enjoy it!?"
+  },
+  {
+    "upload_id": 90002,
+    "upload_name": "Unreadable date",
+    "upload_extra": {
+      "usertags": "dance,pop,house,deep,vocals",
+      "ccud": "media,remix,bpm_120_125",
+      "systags": "non_commercial,audio,mp3,44k,stereo,CBR",
+      "featuring": "Sonja V",
+      "bpm": 123,
+      "relative_dir": "content/Reiswerk",
+      "nsfw": false,
+      "num_reviews": 1,
+      "ccplus": true
+    },
+    "user_name": "Reiswerk",
+    "upload_tags": ",media,remix,bpm_120_125,non_commercial,audio,mp3,44k,stereo,CBR,dance,pop,house,deep,vocals,",
+    "upload_num_scores": 6,
+    "file_page_url": "http://ccmixter.org/files/Reiswerk/90002",
+    "user_real_name": "reiswerk",
+    "artist_page_url": "http://ccmixter.org/people/Reiswerk",
+    "license_logo_url": "http://ccmixter.org/ccskins/shared/images/lics/small-by-nc-3.png",
+    "license_url": "http://creativecommons.org/licenses/by-nc/3.0/",
+    "license_name": "Attribution Noncommercial  (3.0)",
+    "upload_date_format": "sometime last spring",
+    "files": [
+      {
+        "file_id": 69023,
+        "file_upload": 46456,
+        "file_name": "Reiswerk_-_Luwan_House_feat_Sonja_V.mp3",
+        "file_nicname": "mp3",
+        "file_format_info": {
+          "media-type": "audio",
+          "format-name": "audio-mp3-mp3",
+          "default-ext": "mp3",
+          "mime_type": "audio/mpeg",
+          "sr": "44k",
+          "ch": "stereo",
+          "ps": "2:28",
+          "br": "CBR"
+        },
+        "file_extra": {
+          "sha1": "6XBVFXGALQQLUILRVAXHLJOHSARRGSWA"
+        },
+        "file_filesize": " (4.52MB)",
+        "file_order": 0,
+        "file_is_remote": 0,
+        "file_num_download": 0,
+        "download_url": "http://ccmixter.org/content/Reiswerk/Reiswerk_-_Luwan_House_feat_Sonja_V.mp3",
+        "local_path": "/var/www/ccmixter/content/Reiswerk/Reiswerk_-_Luwan_House_feat_Sonja_V.mp3",
+        "file_rawsize": 4739701
+      }
+    ],
+    "upload_description_plain": "This is a mix between Vocal Deep House, pop and Dance.\r\n\r\ni Hope, you enjoy it!?",
+    "upload_description_html": "This is a mix between Vocal Deep House, pop and Dance.<br />\r\n<br />\r\ni Hope, you enjoy it!?"
+  }
+]

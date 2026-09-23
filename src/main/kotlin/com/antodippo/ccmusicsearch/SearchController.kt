@@ -17,7 +17,7 @@ class SearchController(private val searchEngine: SearchEngine) {
         val query = q?.takeIf { it.isNotBlank() }
 
         val songs = if (query != null) this.searchEngine.search(query) else emptyList()
-        searchModel["page"] = SearchPage.from(query, songs)
+        searchModel["page"] = SearchPage.from(query, songs, this.searchEngine.sources)
 
         return "search"
     }

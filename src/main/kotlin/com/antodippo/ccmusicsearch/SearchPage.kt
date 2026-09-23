@@ -29,7 +29,11 @@ data class SearchPage(
 ) {
     companion object {
 
-        fun from(query: String?, results: List<SearchResult>): SearchPage {
+        fun from(
+            query: String?,
+            results: List<SearchResult>,
+            sources: Collection<SearchService> = SearchService.values().toList(),
+        ): SearchPage {
             val songs = results.mapIndexed { index, result -> SongView.of(result, index) }
             val sourceCount = results.map { it.service }.distinct().size
             val resultNoun = plural(songs.size, "result")
@@ -46,7 +50,7 @@ data class SearchPage(
                 pageTitle = pageTitle(query, songs.size),
                 metaDescription = metaDescription(query, songs.size, resultNoun, sourceCount, sourceNoun),
                 results = songs,
-                facets = facets(results),
+                facets = facets(results, sources),
                 licences = licences(results),
                 length = lengthRange(results),
                 tempo = tempoRange(results),
@@ -75,9 +79,8 @@ data class SearchPage(
             sourceNoun: String,
         ): String = when {
             query == null ->
-                "Search Jamendo, ccMixter, Internet Archive, Freesound and the Library of " +
-                    "Congress at once for free, Creative Commons and public domain music for " +
-                    "videos, podcasts and streams. " +
+                "Search Jamendo, ccMixter, Internet Archive and Freesound at once for " +
+                    "free, Creative Commons-licensed music for videos, podcasts and streams. " +
                     "Filter by licence, length and BPM."
 
             resultCount == 0 ->
@@ -90,11 +93,15 @@ data class SearchPage(
                     "allows before you use it."
         }
 
-        /** Every service is listed whether or not it answered, so the rail keeps its shape. */
-        private fun facets(results: List<SearchResult>): List<FacetView> {
+        /**
+         * Every catalogue being searched is listed whether or not it answered, so the rail keeps
+         * its shape. One that is switched off is not listed at all: a permanently greyed-out
+         * source would read as one that happened to find nothing.
+         */
+        private fun facets(results: List<SearchResult>, sources: Collection<SearchService>): List<FacetView> {
             val counts = results.groupingBy { it.service }.eachCount()
 
-            return SearchService.values().map { service ->
+            return SearchService.values().filter { it in sources }.map { service ->
                 val count = counts[service] ?: 0
                 FacetView(
                     key = service.toString(),

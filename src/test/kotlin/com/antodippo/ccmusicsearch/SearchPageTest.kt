@@ -194,6 +194,18 @@ class SearchPageTest {
         assertFalse(ccmixter.enabled)
     }
 
+    // A source that is switched off is not searched at all, so it has no place in the rail.
+    // Listed, it would sit there greyed out on every search, reading as one that happened to
+    // find nothing.
+    @Test
+    fun testItListsOnlyTheSourcesThatWereSearched() {
+        val searched = listOf(SearchService.FREESOUND, SearchService.JAMENDO)
+        val page = SearchPage.from("jazz", listOf(result()), searched)
+
+        // Always in the rail's own order, however the engine happened to list them.
+        assertEquals(listOf("jamendo", "freesound"), page.facets.map { it.key })
+    }
+
     @Test
     fun testItCountsInWordsThatMatchTheNumber() {
         val one = pageOf(result())

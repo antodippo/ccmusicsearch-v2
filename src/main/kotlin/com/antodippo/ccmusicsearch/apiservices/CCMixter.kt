@@ -14,8 +14,12 @@ import java.util.*
 
 @Service
 class CCMixter(private val apiClient: APIClient): APIService {
+
+    override val service = SearchService.CCMIXTER
+
+    private val logger = KotlinLogging.logger {}
+
     override suspend fun search(query: String): Collection<SearchResult> {
-        val logger = KotlinLogging.logger {}
         val escapedQuery = URLEncoder.encode(query, "UTF-8")
 
         val jsonBody: JsonNode
@@ -35,27 +39,52 @@ class CCMixter(private val apiClient: APIClient): APIService {
         }
 
         if (!jsonBody.isEmpty) {
-            return jsonBody.map {
-                SearchResult(
-                    author = it["user_name"].asText(),
-                    title = it["upload_name"].asText(),
-                    duration = durationStringToSeconds(it["files"][0]["file_format_info"]["ps"].asText()),
-                    bpm = it["upload_extra"]["bpm"].asInt(),
-                    tags = it["upload_extra"]["usertags"].asText().take(70),
-                    date = LocalDate.parse(
-                        it["upload_date_format"].asText(),
-                        DateTimeFormatter.ofPattern("E, MMM d, yyyy @ h:mm a", Locale.ENGLISH)
-                    ),
-                    externalLink = URI.create(it["file_page_url"]?.asText().toString()),
-                    license = CCLicense.fromUrl(it["license_url"].asText()),
-                    service = SearchService.CCMIXTER,
-                    popularity = it["upload_num_scores"]?.asLong()
-                )
-            }
+            return jsonBody.mapNotNull { toSearchResult(it) }
         }
 
         return emptyList()
     }
+
+    /**
+     * Null when the upload cannot be turned into a result at all.
+     *
+     * Not every upload is a track: stem packs and sample kits arrive as a single zip, and at
+     * least one upload's only file is its cover image. None of those carry a playing time,
+     * and reading it unguarded threw on the first one — which, under SearchEngine's backstop,
+     * cost every other ccMixter result for the search as well.
+     */
+    private fun toSearchResult(upload: JsonNode): SearchResult? =
+        try {
+            SearchResult(
+                author = upload["user_name"].asText(),
+                title = upload["upload_name"].asText(),
+                duration = duration(upload["files"]),
+                bpm = upload["upload_extra"]?.get("bpm")?.asInt() ?: 0,
+                tags = upload["upload_extra"]?.get("usertags")?.asText()?.take(70) ?: "",
+                date = LocalDate.parse(
+                    upload["upload_date_format"].asText(),
+                    DateTimeFormatter.ofPattern("E, MMM d, yyyy @ h:mm a", Locale.ENGLISH)
+                ),
+                externalLink = URI.create(upload["file_page_url"]?.asText().toString()),
+                license = CCLicense.fromUrl(upload["license_url"].asText()),
+                service = SearchService.CCMIXTER,
+                popularity = upload["upload_num_scores"]?.asLong()
+            )
+        } catch (e: Exception) {
+            logger.warn { "Skipping ccMixter upload ${upload["upload_id"]?.asText()}: ${e.message}" }
+            null
+        }
+
+    /**
+     * The playing time of the first file that has one, or 0 — which the length filter
+     * already treats as "unknown", as it does for every Internet Archive result. The stems
+     * are still worth listing; they are simply not timed.
+     */
+    private fun duration(files: JsonNode?): Int =
+        files
+            ?.firstNotNullOfOrNull { it["file_format_info"]?.get("ps")?.asText() }
+            ?.let { durationStringToSeconds(it) }
+            ?: 0
 
     private fun durationStringToSeconds(durationString: String): Int {
         val stringParts = durationString.split(":")

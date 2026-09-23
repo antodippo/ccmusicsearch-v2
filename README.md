@@ -9,7 +9,7 @@ At the moment it uses these web services API to find music that has been release
 - [CCMixter](http://ccmixter.org/)
 - [Internet Archive](https://archive.org/)
 - [Freesound](https://freesound.org/)
-- [Library of Congress](https://www.loc.gov/collections/national-jukebox/) (National Jukebox, public domain)
+- ~~[Library of Congress](https://www.loc.gov/collections/national-jukebox/)~~ (National Jukebox; switched off while loc.gov answers API clients with a Cloudflare challenge, see [LibraryOfCongress/data-exploration#88](https://github.com/LibraryOfCongress/data-exploration/issues/88))
 - ~~SoundCloud~~ (API not available anymore)
 - ~~FreeMusicArchive~~ (API not available anymore)
  
