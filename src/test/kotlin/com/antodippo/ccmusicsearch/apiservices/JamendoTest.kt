@@ -4,6 +4,7 @@ import com.antodippo.ccmusicsearch.testdoubles.ApiClientThatReadsFromFile
 import com.antodippo.ccmusicsearch.CCLicense
 import com.antodippo.ccmusicsearch.SearchResult
 import com.antodippo.ccmusicsearch.SearchService
+import com.antodippo.ccmusicsearch.testdoubles.ApiClientThatRecords
 import com.antodippo.ccmusicsearch.testdoubles.ApiClientThatReturnsAnEmptyBody
 import com.antodippo.ccmusicsearch.testdoubles.ApiClientThatThrows
 import kotlinx.coroutines.runBlocking
@@ -71,5 +72,50 @@ class JamendoTest {
         val results = jamendo.search("test")
 
         assertEquals(emptyList<SearchResult>(), results)
+    }
+
+    // Jamendo answers a good share of ordinary searches with status "success" and an empty
+    // page — six of thirty identical "jazz" requests — and the next request is almost always
+    // full. That was the 0, 200, 0 seen when refreshing a search.
+    @Test
+    fun testItAsksAgainWhenJamendoAnswersWithAnEmptyPage() = runBlocking {
+        val apiClient = ApiClientThatRecords("jamendoemptypage", "jamendo")
+        val results = Jamendo(apiClient).search("jazz")
+
+        assertEquals(2, results.size)
+        assertEquals(2, apiClient.requests.size)
+        assertEquals(apiClient.requests[0], apiClient.requests[1])
+    }
+
+    // An empty page is also what a search that matches nothing looks like, so the asking
+    // again has to stop somewhere.
+    @Test
+    fun testItStopsAskingAfterThreeEmptyPages() = runBlocking {
+        val apiClient = ApiClientThatRecords("jamendoemptypage")
+        val results = Jamendo(apiClient).search("zqxjvwkpfhgqzz")
+
+        assertEquals(emptyList<SearchResult>(), results)
+        assertEquals(3, apiClient.requests.size)
+    }
+
+    // A refusal — here the real answer to a bad key — is not going to change on the next
+    // request, so it is logged rather than retried.
+    @Test
+    fun testItDoesNotAskAgainWhenJamendoRefusesTheSearch() = runBlocking {
+        val apiClient = ApiClientThatRecords("jamendofailed", "jamendo")
+        val results = Jamendo(apiClient).search("jazz")
+
+        assertEquals(emptyList<SearchResult>(), results)
+        assertEquals(1, apiClient.requests.size)
+    }
+
+    @Test
+    fun testItSkipsUnreadableTracksRatherThanTheWholePage() = runBlocking {
+        val jamendo = Jamendo(ApiClientThatReadsFromFile("jamendowithoddmetadata"))
+        val results = jamendo.search("test")
+
+        // "0000-00-00" as a release date and a missing share URL cost those two tracks
+        // only; the fixture's two real tracks come through as usual.
+        assertEquals(listOf("1760388", "1759840"), results.map { it.externalLink.path.substringAfterLast('/') })
     }
 }

@@ -16,6 +16,9 @@ class SearchEngine(
 
     private val logger = KotlinLogging.logger {}
 
+    /** The catalogues searched here — every service Spring found, less any switched off. */
+    val sources: List<SearchService> = searchServices.map { it.service }
+
     suspend fun search(query: String): List<SearchResult> = coroutineScope {
         val resultsByService = searchServices
             .map { service -> async { searchOne(service, query) } }

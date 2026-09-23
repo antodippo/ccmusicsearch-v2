@@ -15,6 +15,8 @@ import kotlin.math.roundToInt
 @Service
 class Freesound(private val apiClient: APIClient) : APIService {
 
+    override val service = SearchService.FREESOUND
+
     override suspend fun search(query: String): List<SearchResult> {
         val logger = KotlinLogging.logger {}
         val apiKey = System.getProperty("FREESOUND_API_KEY")

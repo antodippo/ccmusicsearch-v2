@@ -114,7 +114,10 @@ oral history, radio broadcast and field recordings alongside music, which is exa
 Wikimedia catalogue failed below. It therefore ships at weight 0.5, and its relevance for
 music is the first thing to check against a real key.
 
-### Added: Library of Congress
+### Added: Library of Congress — switched off since September 2026
+
+> **Status:** off behind `sources.libraryofcongress.enabled`. `www.loc.gov` now answers every
+> server-side client with a Cloudflare challenge; see *Production, September 2026* below.
 
 `https://www.loc.gov/audio/?q=…&fo=json` needs **no key at all** — the Library rate-limits
 rather than authenticating. The National Jukebox is 5,882 recordings from 1900–1925, public
@@ -265,9 +268,53 @@ claim anything for records past the line.
 
 Still unverified for the Library:
 
-- That loc.gov serves a plain `java.net.http` client over time: it is protective of automated
-  traffic and `ApiClientViaHttp` sends no custom User-Agent. A 403 would be silent, showing up
-  only as the Library never contributing results.
+- ~~That loc.gov serves a plain `java.net.http` client over time.~~ Answered, and it doesn't:
+  see *Production, September 2026*. It was not silent, in the end — the challenge page is HTML,
+  so every search logged a JSON parse error.
 - Whether any record in the collection is dated after 1925. Those now show as "Licence
   unknown" rather than as public domain, which is safe but invisible under the "Commercial
   use OK" filter — worth knowing how many there are.
+
+---
+
+## 6. Production, September 2026: four ways a source went quiet
+
+Fourteen days of Cloud Run logs, each error matched to the search that caused it through the
+request log, then reproduced against the live API. Every one of them had the same shape: one
+bad answer cost that source *all* of its results for the search.
+
+| Source | Errors | What was happening |
+|---|---|---|
+| Library of Congress | 878 — every search | `www.loc.gov` answers any server-side client with a Cloudflare managed challenge: `403`, `cf-mitigated: challenge`, an HTML "Just a moment…" page. Same for curl, a Java UA, a browser UA, and the homepage. Open upstream as [LibraryOfCongress/data-exploration#88](https://github.com/LibraryOfCongress/data-exploration/issues/88). |
+| Internet Archive | 20 NPEs | The query went into Lucene syntax raw. "ac/dc", "csma/cd", an unbalanced quote or bracket, a pasted URL: the archive answers `200 {"error": "…"}`, with no `response` key to read. |
+| ccMixter | 47 NPEs | Some uploads are not timed tracks — stem packs and sample kits are one zip, and one upload's only file is its cover image — so `files[0].file_format_info.ps` is absent. |
+| Jamendo | none logged | Six of thirty identical `jazz` requests came back `status: success`, `code: 0`, `results: []`, on every endpoint and whatever the parameters. The request after an empty one was full 11 times in 12. Refreshing a search showed 0, 200, 0. |
+
+What was done about each:
+
+- **Library of Congress** is off behind `sources.libraryofcongress.enabled` (env
+  `SOURCES_LIBRARYOFCONGRESS_ENABLED=true` brings it back). The source rail lists only what
+  is searched, so it disappears from there by itself; the prose that names the sources was
+  edited by hand and needs the Library back when the flag goes on — `LibraryOfCongress.kt`
+  lists where. Not considered: a browser User-Agent (already challenged) or replaying a
+  challenge cookie, which would be getting round bot detection rather than using an API.
+- **Internet Archive:** `archiveQuery()` keeps the syntax that parses — words, a leading `-`,
+  AND/OR/NOT with a term to apply to, "phrases" whose quotes pair up — and turns the rest into
+  spaces. Two simpler rules were tried and are worse. Escaping: the archive's rewriter rejects
+  `\-` and `\+`, losing "hip-hop" and "c++". Flattening to bare words: "jazz -live" becomes
+  jazz *and* live, the opposite set, and a lower-cased OR becomes a required word ("jazz or
+  blues" 197 matches, "jazz OR blues" 43,555). A query with nothing searchable left does not
+  call the archive at all, and an `error` body is logged as a rejection rather than
+  surfacing as an NPE.
+- **ccMixter:** each upload is mapped on its own, and an upload with no playing time is kept
+  with length 0 — "unknown" to the length filter, as for every Internet Archive result.
+- **Jamendo:** an empty page is asked again, up to three attempts. It cannot be told apart from
+  a search that genuinely matches nothing, so those cost two extra ~0.2 s requests, inside the
+  time Internet Archive takes anyway. A non-`success` status is now logged instead of being
+  indistinguishable from "no results", and one unreadable track no longer costs the page.
+
+Also seen, and left alone for now: Freesound answering a handful of queries with a plain-text
+`Bad Request` (5 in the fortnight), ccMixter answering queries that end in `'` with
+`Illegal …` (5), and ccMixter repeating its whole response body in an `X-JSON` header of
+100–160 KB — well under the JDK's 384 KB header limit at `limit=25`, but worth remembering
+before asking it for more.

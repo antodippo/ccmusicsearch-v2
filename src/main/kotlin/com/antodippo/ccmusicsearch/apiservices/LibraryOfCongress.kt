@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import io.github.oshai.kotlinlogging.KotlinLogging
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.stereotype.Service
 import java.net.URI
 import java.net.URLEncoder
@@ -12,7 +13,19 @@ import java.net.http.HttpResponse
 import java.time.Clock
 import java.time.LocalDate
 
+/**
+ * Off unless sources.libraryofcongress.enabled=true (SOURCES_LIBRARYOFCONGRESS_ENABLED on Cloud
+ * Run). Since September 2026 www.loc.gov answers every server-side client — any User-Agent, even
+ * the homepage — with a Cloudflare challenge page instead of JSON, so every search failed here
+ * and logged it. It is an open upstream report, LibraryOfCongress/data-exploration#88; switch
+ * this back on once that endpoint answers a plain HTTP client again.
+ *
+ * The source rail follows the flag by itself. The prose that names the sources does not, and
+ * wants the Library back when this is on: about.mustache, the landing description in
+ * SearchPage, the JSON-LD and the "four catalogues" line in search.mustache, and the README.
+ */
 @Service
+@ConditionalOnProperty("sources.libraryofcongress.enabled", havingValue = "true")
 class LibraryOfCongress(
     private val apiClient: APIClient,
     // Injected so the public domain cut-off below can be pinned in tests. It moves every
@@ -20,6 +33,8 @@ class LibraryOfCongress(
     // no test at all.
     private val clock: Clock = Clock.systemUTC(),
 ) : APIService {
+
+    override val service = SearchService.LIBRARYOFCONGRESS
 
     private val logger = KotlinLogging.logger {}
 
